@@ -4,11 +4,11 @@ namespace Akika\LaravelMpesa\Commands;
 
 use Illuminate\Console\Command;
 
-class InstallAkikaMpesaPackage extends Command
+class InstallAkikaMpesaMultivendorPackage extends Command
 {
     protected $signature = 'mpesa:install';
 
-    protected $description = 'Publish Akika/LaravelMpesa package migrations';
+    protected $description = 'Publish Akika/LaravelMpesaMultivendor package migrations';
 
     public function handle()
     {
@@ -20,7 +20,7 @@ class InstallAkikaMpesaPackage extends Command
             if ($this->getForceConcentForConfig()) {
                 $this->publishConfig(true);
             } else {
-                $this->info('Publishing Akika/LaravelMpesa package config file cancelled.');
+                $this->info('Publishing Akika/LaravelMpesaMultivendor package config file cancelled.');
             }
         }
     }
@@ -32,14 +32,14 @@ class InstallAkikaMpesaPackage extends Command
 
     public function checkIfConfigExists()
     {
-        $this->info('Checking if Akika/LaravelMpesa package config file exists...');
+        $this->info('Checking if Akika/LaravelMpesaMultivendor package config file exists...');
 
         // check if the config file exists
         if (file_exists(config_path('mpesa.php'))) {
-            $this->info('Akika/LaravelMpesa package config file already exists.');
+            $this->info('Akika/LaravelMpesaMultivendor package config file already exists.');
             return true;
         } else {
-            $this->info('Akika/LaravelMpesa package config file does not exist.');
+            $this->info('Akika/LaravelMpesaMultivendor package config file does not exist.');
             return false;
         }
     }
@@ -52,10 +52,10 @@ class InstallAkikaMpesaPackage extends Command
 
     public function publishConfig($forcePublish = false)
     {
-        $this->info('Publishing Akika/LaravelMpesa package config file...');
+        $this->info('Publishing Akika/LaravelMpesaMultivendor package config file...');
 
         $params = [
-            '--provider' => "Akika\LaravelMpesa\MpesaServiceProvider",
+            '--provider' => "Akika\LaravelMpesaMultivendor\MpesaServiceProvider",
             '--tag' => "config"
         ];
 
@@ -65,7 +65,7 @@ class InstallAkikaMpesaPackage extends Command
 
         $this->call('vendor:publish', $params);
 
-        $this->info('Akika/LaravelMpesa package config file published successfully.');
+        $this->info('Akika/LaravelMpesaMultivendor package config file published successfully.');
     }
 
     /**

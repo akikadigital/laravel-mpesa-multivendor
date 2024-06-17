@@ -1,13 +1,13 @@
 # Laravel Mpesa Multivendor Package by [Akika Digital](https://akika.digital)
 
-This Laravel package provides convenient methods for integrating [Mpesa Daraja API's](https://developer.safaricom.co.ke/APIs) functionalities into your Laravel application. The package will allow using more than one shortcodes. The package includes the recent Tax Remmitance and Bill Manager APIs.
+This Laravel package provides convenient methods for integrating [Mpesa Daraja API's](https://developer.safaricom.co.ke/APIs) functionalities into your Laravel application. The package will allow using more than one shortcodes. It also includes the recent Tax Remmitance and Bill Manager APIs.
 
 ## Installation
 
 You can install the package via composer:
 
 ```bash
-composer require akika/laravel-mpesa
+composer require akika/laravel-mpesa-multivendor
 ```
 
 After installing the package, publish the configuration file using the following command:
