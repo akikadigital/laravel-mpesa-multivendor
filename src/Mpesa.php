@@ -14,8 +14,9 @@ class Mpesa
     public $environment;
     public $url;
 
-    public $initiatorName;
     public $mpesaShortcode;
+    public $apiUsername;
+    public $apiPassword;
     public $securityCredential;
 
     public $consumerKey;
@@ -27,18 +28,19 @@ class Mpesa
      * Initialize the Mpesa class with the necessary credentials
      */
 
-    public function __construct()
+    public function __construct($mpesaShortcode, $consumerKey, $consumerSecret, $apiUsername, $apiPassword)
     {
         $this->environment = config('mpesa.env');
         $this->debugMode = config('mpesa.debug');
         $this->url = $this->environment === 'sandbox' ? 'https://sandbox.safaricom.co.ke' : 'https://api.safaricom.co.ke';
 
-        $this->mpesaShortcode = config('mpesa.shortcode');
-        $this->initiatorName = config('mpesa.initiator_name');
-        $this->securityCredential = $this->generateCertificate();
+        $this->mpesaShortcode = $mpesaShortcode;
+        $this->consumerKey = $consumerKey;
+        $this->consumerSecret = $consumerSecret;
 
-        $this->consumerKey = config('mpesa.consumer_key');
-        $this->consumerSecret = config('mpesa.consumer_secret');
+        $this->apiUsername = $apiUsername;
+        $this->apiPassword = $apiPassword;
+        $this->securityCredential = $this->generateCertificate();
     }
 
     // --------------------------------- Account Balance ---------------------------------
@@ -48,18 +50,18 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function getBalance()
+    public function getBalance($resultUrl, $timeoutUrl)
     {
         $url = $this->url . '/mpesa/accountbalance/v1/query';
         $data = [
-            'Initiator'             => $this->initiatorName, // This is the credential/username used to authenticate the transaction request
+            'Initiator'             => $this->apiUsername, // This is the credential/username used to authenticate the transaction request
             'SecurityCredential'    => $this->securityCredential, // Base64 encoded string of the M-PESA short code and password, which is encrypted using M-PESA public key and validates the transaction on M-PESA Core system.
             'CommandID'             => 'AccountBalance', // A unique command is passed to the M-PESA system.
             'PartyA'                => $this->mpesaShortcode, // The shortcode of the organization querying for the account balance.
             'IdentifierType'        => $this->getIdentifierType("shortcode"), // Type of organization querying for the account balance.
             'Remarks'               => "balance", // String sequence of characters up to 100
-            'QueueTimeOutURL'       => config('mpesa.balance_timeout_url'),
-            'ResultURL'             => config('mpesa.balance_result_url')
+            'QueueTimeOutURL'       => $resultUrl, // The timeout end-point that receives a timeout response.
+            'ResultURL'             => $timeoutUrl
         ];
 
         // check if $data['ResultURL'] is set and that it is a valid url
@@ -92,15 +94,15 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function c2bRegisterUrl()
+    public function c2bRegisterUrl($confirmationUrl, $validationUrl)
     {
         $url = $this->url . '/mpesa/c2b/v2/registerurl';
 
         $data = [
             'ShortCode'     => $this->mpesaShortcode,
             'ResponseType'   => 'Completed', // [Canceled | Completed] . Default is Completed.
-            'ConfirmationURL' => config('mpesa.stk_confirmation_url'),
-            'ValidationURL' => config('mpesa.stk_validation_url')
+            'ConfirmationURL' => $confirmationUrl,
+            'ValidationURL' => $validationUrl
         ];
 
         // check if $data['ConfirmationURL] and $data['ValidationURL] are set and that they are valid urls
@@ -177,7 +179,7 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function stkPush($accountNumber, $phoneNumber, $amount, $transactionDesc = null)
+    public function stkPush($accountNumber, $phoneNumber, $amount, $callbackUrl, $transactionDesc = null)
     {
         $url = $this->url . '/mpesa/stkpush/v1/processrequest';
         $data = [
@@ -191,7 +193,7 @@ class Mpesa
             'PhoneNumber'           => $this->sanitizePhoneNumber($phoneNumber),
             'AccountReference'      => $accountNumber, //Account Number for a paybill..Maximum of 12 Characters.,
             'TransactionDesc'       => $transactionDesc ? substr($transactionDesc, 0, 13) : 'STK Push', // Should not exceed 13 characters
-            'CallBackURL'           => config('mpesa.stk_callback_url'),
+            'CallBackURL'           => $callbackUrl,
         ];
 
         // check if $data['CallBackURL] is set and that it is a valid url
@@ -255,21 +257,21 @@ class Mpesa
      * 
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
-    public function reverse($transactionId, $amount, $receiverShortCode, $remarks)
+    public function reverse($transactionId, $amount, $receiverShortCode, $remarks, $resultUrl, $timeoutUrl, $ocassion = null)
     {
         $url = $this->url . '/mpesa/reversal/v1/request';
         $data = [
-            'Initiator'                 =>  $this->initiatorName, // The name of the initiator to initiate the request.
+            'Initiator'                 =>  $this->apiUsername, // The name of the initiator to initiate the request.
             'SecurityCredential'        =>  $this->securityCredential,
             'CommandID'                 =>  'TransactionReversal',
-            "TransactionID"             =>  $transactionId, // Payment transaction ID of the transaction that is being reversed. e.g. LKXXXX1234
+            "TransactionID"             =>  $transactionId, // Payment transaction ID of the transaction that is being reversed. e.g LKXXXX1234
             "Amount"                    =>  $amount, // The transaction amount
             "ReceiverParty"             =>  $receiverShortCode, // The organization that receives the transaction.
             "RecieverIdentifierType"    =>  $this->getIdentifierType("shortcode"), // Type of organization that receives the transaction.
             "Remarks"                   =>  $remarks ?? "please", // Comments that are sent along with the transaction.
-            "Occasion"                  =>  "", // Optional Parameter.
-            "ResultURL"                 =>  config('mpesa.reversal_result_url'),
-            "QueueTimeOutURL"           =>  config('mpesa.reversal_timeout_url'),
+            "Occasion"                  =>  $ocassion, // Optional Parameter.
+            "ResultURL"                 =>  $resultUrl,
+            "QueueTimeOutURL"           =>  $timeoutUrl,
         ];
 
         // check if $data['ResultURL] is set and that it is a valid url
@@ -315,21 +317,21 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function b2cTransaction($oversationId, $commandID, $msisdn, $amount, $remarks, $ocassion = null)
+    public function b2cTransaction($oversationId, $commandID, $msisdn, $amount, $remarks, $resultUrl, $timeoutUrl, $ocassion = null)
     {
         $url = $this->url . '/mpesa/b2c/v1/paymentrequest';
         $data = [
-            'OriginatorConversationID' => $oversationId, // This is a unique string you specify for every API request you simulate
-            'InitiatorName'         =>  $this->initiatorName, // This is an API user created by the Business Administrator of the M-PESA
-            'SecurityCredential'    =>  $this->securityCredential, // This is the value obtained after encrypting the API initiator password.
-            'CommandID'             =>  $commandID, // This is a unique command that specifies B2C transaction type.
-            'Amount'                =>  floor($amount), // remove decimal points
-            'PartyA'                =>  $this->mpesaShortcode,
-            'PartyB'                =>  $this->sanitizePhoneNumber($msisdn),
-            'Remarks'               =>  $remarks,
-            'Occassion'              =>  $ocassion ? substr($ocassion, 0, 100) : '', // Can be null
-            'QueueTimeOutURL'       =>  config('mpesa.b2c_timeout_url'),
-            'ResultURL'             =>  config('mpesa.b2c_result_url'),
+            'OriginatorConversationID'  =>  $oversationId, // This is a unique string you specify for every API request you simulate
+            'apiUsername'               =>  $this->apiUsername, // This is an API user created by the Business Administrator of the M-PESA
+            'SecurityCredential'        =>  $this->securityCredential, // This is the value obtained after encrypting the API initiator password.
+            'CommandID'                 =>  $commandID, // This is a unique command that specifies B2C transaction type.
+            'Amount'                    =>  floor($amount), // remove decimal points
+            'PartyA'                    =>  $this->mpesaShortcode,
+            'PartyB'                    =>  $this->sanitizePhoneNumber($msisdn),
+            'Remarks'                   =>  $remarks,
+            'Occassion'                 =>  $ocassion ? substr($ocassion, 0, 100) : '', // Can be null
+            'QueueTimeOutURL'           =>  $timeoutUrl,
+            'ResultURL'                 =>  $resultUrl,
         ];
 
         // check if $data['ResultURL] is set and that it is a valid url
@@ -369,23 +371,23 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function validatedB2CTransaction($commandID, $msisdn, $amount, $remarks, $idNumber, $ocassion = null)
+    public function validatedB2CTransaction($commandID, $msisdn, $amount, $remarks, $idNumber, $resultUrl, $timeoutUrl, $ocassion = null)
     {
         $url = $this->url . '/mpesa/b2c/v1/paymentrequest';
         $data = [
-            'InitiatorName'         =>  $this->initiatorName,
-            'SecurityCredential'    =>  $this->securityCredential,
-            'CommandID'             =>  $commandID,
-            'Amount'                =>  floor($amount), // remove decimal points
-            'PartyA'                =>  $this->mpesaShortcode,
-            'PartyB'                =>  $this->sanitizePhoneNumber($msisdn),
-            'Remarks'               =>  $remarks,
-            'Occasion'              =>  $ocassion, // Can be null
-            'OriginatorConversationID' => Carbon::rawParse('now')->format('YmdHis'), //unique id for the transaction
-            'IDType' => '01', //01 for national id
-            'IDNumber' => $idNumber,
-            'QueueTimeOutURL'       =>  config('mpesa.b2c_timeout_url'),
-            'ResultURL'             =>  config('mpesa.b2c_result_url'),
+            'apiUsername'               =>  $this->apiUsername,
+            'SecurityCredential'        =>  $this->securityCredential,
+            'CommandID'                 =>  $commandID,
+            'Amount'                    =>  floor($amount), // remove decimal points
+            'PartyA'                    =>  $this->mpesaShortcode,
+            'PartyB'                    =>  $this->sanitizePhoneNumber($msisdn),
+            'Remarks'                   =>  $remarks,
+            'Occasion'                  =>  $ocassion, // Can be null
+            'OriginatorConversationID'  =>  Carbon::rawParse('now')->format('YmdHis'), //unique id for the transaction
+            'IDType'                    =>  '01', //01 for national id
+            'IDNumber'                  =>  $idNumber,
+            'QueueTimeOutURL'           =>  $timeoutUrl,
+            'ResultURL'                 =>  $resultUrl,
         ];
 
         // check if $data['ResultURL] is set and that it is a valid url
@@ -426,12 +428,12 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function b2bPaybill($destShortcode, $amount, $remarks, $accountNumber, $requester = null)
+    public function b2bPaybill($destShortcode, $amount, $remarks, $accountNumber, $resultUrl, $timeoutUrl, $requester = null)
     {
         //DisburseFundsToBusiness
         $url = $this->url . '/mpesa/b2b/v1/paymentrequest';
         $data = [
-            'Initiator'                 =>  $this->initiatorName,
+            'Initiator'                 =>  $this->apiUsername,
             'SecurityCredential'        =>  $this->securityCredential,
             'CommandID'                 =>  'BusinessPayBill', // This specifies the type of transaction being performed. There are five allowed values on the API: BusinessPayBill, BusinessBuyGoods, DisburseFundsToBusiness, BusinessToBusinessTransfer or MerchantToMerchantTransfer.
             'SenderIdentifierType'      =>  $this->getIdentifierType("shortcode"),
@@ -442,8 +444,8 @@ class Mpesa
             'AccountReference'          =>  $accountNumber, // The account number to be associated with the payment. Up to 13 characters.
             'Requester'                 =>  $this->sanitizePhoneNumber($requester), // Optional. The consumer’s mobile number on behalf of whom you are paying.
             'Remarks'                   =>  $remarks,
-            'QueueTimeOutURL'           =>  config('mpesa.b2b_timeout_url'),
-            'ResultURL'                 =>  config('mpesa.b2b_result_url')
+            'QueueTimeOutURL'           =>  $timeoutUrl,
+            'ResultURL'                 =>  $resultUrl
         ];
 
         // check if $data['ResultURL] is set and that it is a valid url
@@ -483,12 +485,12 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function b2bBuyGoods($destShortcode, $amount, $remarks, $accountNumber, $requester = null)
+    public function b2bBuyGoods($destShortcode, $amount, $remarks, $accountNumber, $resultUrl, $timeoutUrl, $requester = null)
     {
         //DisburseFundsToBusiness
         $url = $this->url . '/mpesa/b2b/v1/paymentrequest';
         $data = [
-            'Initiator'                 =>  $this->initiatorName,
+            'Initiator'                 =>  $this->apiUsername,
             'SecurityCredential'        =>  $this->securityCredential,
             'CommandID'                 =>  'BusinessBuyGoods', // This specifies the type of transaction being performed. There are five allowed values on the API: BusinessPayBill, BusinessBuyGoods, DisburseFundsToBusiness, BusinessToBusinessTransfer or MerchantToMerchantTransfer.
             'SenderIdentifierType'      =>  $this->getIdentifierType("shortcode"),
@@ -499,8 +501,8 @@ class Mpesa
             'AccountReference'          =>  $accountNumber, // The account number to be associated with the payment. Up to 13 characters.
             'Requester'                 =>  $this->sanitizePhoneNumber($requester), // Optional. The consumer’s mobile number on behalf of whom you are paying.
             'Remarks'                   =>  $remarks,
-            'QueueTimeOutURL'           =>  config('mpesa.b2b_timeout_url'),
-            'ResultURL'                 =>  config('mpesa.b2b_result_url')
+            'QueueTimeOutURL'           =>  $timeoutUrl,
+            'ResultURL'                 =>  $resultUrl
         ];
 
         // check if $data['ResultURL] is set and that it is a valid url
@@ -541,11 +543,11 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function getTransactionStatus($transactionId, $identifierType, $remarks, $originalConversationId)
+    public function getTransactionStatus($transactionId, $identifierType, $remarks, $resultUrl, $timeoutUrl, $originalConversationId)
     {
         $url = $this->url . '/mpesa/transactionstatus/v1/query';
         $data = [
-            'Initiator'                 =>  $this->initiatorName,
+            'Initiator'                 =>  $this->apiUsername,
             'SecurityCredential'        =>  $this->securityCredential,
             'CommandID'                 =>  'TransactionStatusQuery',
             'TransactionID'             =>  $transactionId, //Organization Receiving the funds. e.g. LXXXXXX1234
@@ -554,8 +556,8 @@ class Mpesa
             'Remarks'                   =>  $remarks,
             'Occasion'                  =>  NULL,
             'OriginalConversationID'    =>  $originalConversationId,
-            'ResultURL'                 =>  config('mpesa.transaction_status_result_url'),
-            'QueueTimeOutURL'           =>  config('mpesa.transaction_status_timeout_url'),
+            'ResultURL'                 =>  $resultUrl,
+            'QueueTimeOutURL'           =>  $timeoutUrl,
         ];
 
         // check if $data['ResultURL] is set and that it is a valid url
@@ -604,16 +606,16 @@ class Mpesa
      * 
      */
 
-    public function dynamicQR($merchantName, $refNo, $amount, $trxCode, $cpi, $size)
+    public function dynamicQR($merchantName, $refNo, $amount = null, $trxCode, $cpi, $size)
     {
         $url = $this->url . '/mpesa/qrcode/v1/generate';
         $data = [
-            'MerchantName' => $merchantName, // Name of the Company/M-Pesa Merchant Name
-            'RefNo' => $refNo, // Transaction Reference
-            'Amount' => floor($amount), // The total amount for the sale/transaction.
-            'TrxCode' => $trxCode, // Transaction Type
-            'CPI' => $cpi, // Credit Party Identifier. Can be a Mobile Number, Business Number, Agent Till, Paybill or Business number, or Merchant Buy Goods.
-            'Size' => $size // Size of the QR code image in pixels. QR code image will always be a square image.
+            'MerchantName'  => $merchantName, // Name of the Company/M-Pesa Merchant Name
+            'RefNo'         => $refNo, // Transaction Reference
+            'Amount'        => ($amount != null) ? floor($amount) : 0, // The total amount for the sale/transaction.
+            'TrxCode'       => $trxCode, // Transaction Type
+            'CPI'           => $cpi, // Credit Party Identifier. Can be a Mobile Number, Business Number, Agent Till, Paybill or Business number, or Merchant Buy Goods.
+            'Size'          => $size // Size of the QR code image in pixels. QR code image will always be a square image.
         ];
 
         // make the request
@@ -640,16 +642,16 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function billManagerOptin($email, $phoneNumber)
+    public function billManagerOptin($email, $phoneNumber, $sendReminders, $logoUrl, $callbackUrl)
     {
         $url = $this->url . "/v1/billmanager-invoice/optin";
         $data = [
-            'ShortCode' => $this->mpesaShortcode,
-            'email' => $email,
-            'officialContact' => $this->sanitizePhoneNumber($phoneNumber),
-            'sendReminders' => '1', // [0 | 1] This field gives you the flexibility as a business to enable or disable sms payment reminders for invoices sent.
-            'logo' => config('mpesa.confirmation_url'), // Optional : Image to be embedded in the invoices and receipts sent to your customer.
-            'callbackurl' => config('mpesa.bill_optin_callback_url')
+            'ShortCode'         => $this->mpesaShortcode,
+            'email'             => $email,
+            'officialContact'   => $this->sanitizePhoneNumber($phoneNumber),
+            'sendReminders'     => $sendReminders ? 1 : 0, // [0 | 1] This field gives you the flexibility as a business to enable or disable sms payment reminders for invoices sent.
+            'logo'              => $logoUrl, // Optional : Image to be embedded in the invoices and receipts sent to your customer.
+            'callbackurl'       => $callbackUrl
         ];
 
         // check if $data['callbackurl] is set and that it is a valid url
@@ -696,13 +698,13 @@ class Mpesa
         $url = $this->url . "/v1/billmanager-invoice/single-invoicing";
         $data = [
             'externalReference' => $reference, // This is a unique invoice name on your system’s end. e.g. INV12345
-            'billedFullName' => $billedTo, // Full name of the person being billed e.g. John Doe
+            'billedFullName'    => $billedTo, // Full name of the person being billed e.g. John Doe
             'billedPhoneNumber' => $phoneNumber, // Phone number of the person being billed e.g. 0712345678
-            'billedPeriod' => $billingPeriod,
-            'invoiceName' => $invoiceName, // A descriptive invoice name for what your customer is being billed. e.g. water bill
-            'dueDate' => date('Y-m-d', strtotime($dueDate)), // This is the date you expect the customer to have paid the invoice amount.
-            'amount' => floor($amount), // Total Invoice amount to be paid in Kenyan Shillings without special characters
-            'invoiceItems' => $items // These are additional billable items that you need included in your invoice. 
+            'billedPeriod'      => $billingPeriod,
+            'invoiceName'       => $invoiceName, // A descriptive invoice name for what your customer is being billed. e.g. water bill
+            'dueDate'           => date('Y-m-d', strtotime($dueDate)), // This is the date you expect the customer to have paid the invoice amount.
+            'amount'            => floor($amount), // Total Invoice amount to be paid in Kenyan Shillings without special characters
+            'invoiceItems'      => $items // These are additional billable items that you need included in your invoice. 
         ];
 
         // make the request
@@ -732,22 +734,22 @@ class Mpesa
      * 
      */
 
-    public function taxRemittance($amount, $receiverShortCode, $accountReference, $remarks)
+    public function taxRemittance($amount, $receiverShortCode, $accountReference, $remarks, $resultUrl, $timeoutUrl)
     {
         $url = $this->url . '/mpesa/b2b/v1/remittax';
         $data = [
-            'Initiator' => $this->initiatorName,
-            'SecurityCredential' => $this->securityCredential,
-            'CommandID' => 'BusinessPayment',
-            'SenderIdentifierType' => $this->getIdentifierType("shortcode"),
-            'RecieverIdentifierType' => $this->getIdentifierType("shortcode"),
-            'Amount' => floor($amount),
-            'PartyA' => $this->mpesaShortcode,
-            'PartyB' => $receiverShortCode,
-            'AccountReference' => $accountReference,
-            'Remarks' => $remarks ?? 'Tax remittance',
-            'QueueTimeOutURL' => config('mpesa.tax_remittance_timeout_url'),
-            'ResultURL' => config('mpesa.tax_remittance_result_url')
+            'Initiator'                 => $this->apiUsername,
+            'SecurityCredential'        => $this->securityCredential,
+            'CommandID'                 => 'BusinessPayment',
+            'SenderIdentifierType'      => $this->getIdentifierType("shortcode"),
+            'RecieverIdentifierType'    => $this->getIdentifierType("shortcode"),
+            'Amount'                    => floor($amount),
+            'PartyA'                    => $this->mpesaShortcode,
+            'PartyB'                    => $receiverShortCode,
+            'AccountReference'          => $accountReference,
+            'Remarks'                   => $remarks ?? 'Tax remittance',
+            'QueueTimeOutURL'           => $timeoutUrl,
+            'ResultURL'                 => $resultUrl
         ];
 
         // check if $data['ResultURL] is set and that it is a valid url

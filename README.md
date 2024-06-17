@@ -1,13 +1,13 @@
 # Laravel Mpesa Multivendor Package by [Akika Digital](https://akika.digital)
 
-This Laravel package provides convenient methods for integrating [Mpesa Daraja API's](https://developer.safaricom.co.ke/APIs) functionalities into your Laravel application. The package will allow using more than one shortcodes. The package includes the recent Tax Remmitance and Bill Manager APIs.
+This Laravel package provides convenient methods for integrating [Mpesa Daraja API's](https://developer.safaricom.co.ke/APIs) functionalities into your Laravel application. The package will allow using more than one shortcodes. It also includes the recent Tax Remmitance and Bill Manager APIs.
 
 ## Installation
 
 You can install the package via composer:
 
 ```bash
-composer require akika/laravel-mpesa
+composer require akika/laravel-mpesa-multivendor
 ```
 
 After installing the package, publish the configuration file using the following command:
@@ -24,28 +24,6 @@ Add the following configurations into the .env file
 
 ```
 MPESA_ENV=
-MPESA_SHORTCODE=
-MPESA_CONSUMER_KEY=
-MPESA_CONSUMER_SECRET=
-MPESA_PASSKEY=
-MPESA_INITIATOR_NAME=
-MPESA_INITIATOR_PASSWORD=
-MPESA_STK_VALIDATION_URL=
-MPESA_STK_CONFIRMATION_URL=
-MPESA_STK_CALLBACK_URL=
-MPESA_BALANCE_RESULT_URL=
-MPESA_BALANCE_TIMEOUT_URL=
-MPESA_TRANSACTION_STATUS_RESULT_URL=
-MPESA_TRANSACTION_STATUS_TIMEOUT_URL=
-MPESA_B2C_TIMEOUT_URL=
-MPESA_B2C_RESULT_URL=
-MPESA_B2B_TIMEOUT_URL=
-MPESA_B2B_RESULT_URL=
-MPESA_REVERSAL_TIMEOUT_URL=
-MPESA_REVERSAL_RESULT_URL=
-MPESA_BILL_OPTIN_CALLBACK_URL=
-MPESA_TAX_REMITTANCE_TIMEOUT_URL=
-MPESA_TAX_REMITTANCE_RESULT_URL=
 ```
 
 NOTE: The mpesa.php config file sets the default `MPESA_ENV` value to `sandbox`. This will always load sandbox urls.
@@ -61,8 +39,14 @@ All responses, except the token generation response, conform to the responses do
 ```php
 use Akika\LaravelMpesa\Mpesa;
 
-$mpesa = new Mpesa();
+$mpesa = new Mpesa($mpesaShortcode, $consumerKey, $consumerSecret, $apiUsername, $apiPassword);
 ```
+
+- $mpesaShortcode: The shortcode to use for the current operation
+- $consumerKey: Obtained from Daraja portal
+- $consumerSecret: Obtained from Daraja portal
+- $apiUsername: Mpesa portal API user's username
+- $apiPassword: Mpesa portal API user's password
 
 ### Fetching Token
 
@@ -181,4 +165,3 @@ $response = $mpesa->taxRemittance($amount, $receiverShortCode, $accountReference
 ## License
 
 The Laravel Mpesa package is open-sourced software licensed under the MIT license. See the LICENSE file for details.
-
