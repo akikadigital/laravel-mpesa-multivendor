@@ -26,6 +26,8 @@ Add the following configurations into the .env file
 MPESA_ENV=
 ```
 
+The value is either `production` or `sandbox`
+
 NOTE: The mpesa.php config file sets the default `MPESA_ENV` value to `sandbox`. This will always load sandbox urls.
 
 ## Function Responses
@@ -48,6 +50,13 @@ $mpesa = new Mpesa($mpesaShortcode, $consumerKey, $consumerSecret, $apiUsername,
 - $apiUsername: Mpesa portal API user's username
 - $apiPassword: Mpesa portal API user's password
 
+### Important Urls
+
+Daraja utilizes the two main urls for callbacks. Timeout Url and Result Url. The two urls will also be used in this package as follows:
+
+- $resultUrl : Endpoint to send the results in case of success
+- $timeoutUrl : Endpoint to send the results in case of operations timeout
+
 ### Fetching Token
 
 You can fetch the token required for Mpesa API calls as follows:
@@ -61,7 +70,7 @@ $token = $mpesa->getToken();
 You can fetch mpesa account balance as follows:
 
 ```php
-$balance = $mpesa->getBalance();
+$balance = $mpesa->getBalance($resultUrl, $timeoutUrl);
 ```
 
 ### C2B Transactions
@@ -70,23 +79,8 @@ $balance = $mpesa->getBalance();
 
 You can register validation and confirmation URLs for C2B transactions:
 
-```php
-$response = $mpesa->c2bRegisterUrl();
-```
-
-You can register the C2B URLs using the provided command below:
-
-```php
-php artisan mpesa:register-c2b-urls
-```
-
-The above command requires you to have set the below variables in your env or in the config file:
-
-```
-MPESA_SHORTCODE=
-MPESA_STK_VALIDATION_URL=
-MPESA_STK_CONFIRMATION_URL=
-```
+````php
+$response = $mpesa->c2bRegisterUrl($confirmationUrl, $validationUrl);
 
 #### Simulating C2B Transactions
 
@@ -94,15 +88,19 @@ You can simulate payment requests from clients:
 
 ```php
 $response = $mpesa->c2bSimulate($amount, $phoneNumber, $billRefNumber, $commandID);
-```
+````
+
+- $commandID is either `CustomerPayBillOnline` or `CustomerBuyGoodsOnline` and if not set, the package will assume `CustomerPayBillOnline`
 
 #### Initiating STK Push
 
 You can initiate online payment on behalf of a customer:
 
 ```php
-$response = $mpesa->stkPush($accountNumber, $phoneNumber, $amount, $transactionDesc);
+$response = $mpesa->stkPush($accountNumber, $phoneNumber, $amount, $callbackUrl, $transactionDesc);
 ```
+
+- `$transactionDesc` can be null
 
 #### Querying STK Push Status
 
@@ -117,39 +115,49 @@ $response = $mpesa->stkPushStatus($checkoutRequestID);
 You can reverse a C2B M-Pesa transaction:
 
 ```php
-$response = $mpesa->reverse($transactionId, $amount, $receiverShortCode, $remarks);
+$response = $mpesa->reverse($transactionId, $amount, $receiverShortCode, $remarks, $resultUrl, $timeoutUrl, $ocassion);
 ```
+
+- `$ocassion` is an optional field
 
 ### Business to Customer (B2C) Transactions
 
 You can perform Business to Customer transactions:
 
 ```php
-$response = $mpesa->b2cTransaction($oversationId, $commandID, $msisdn, $amount, $remarks, $ocassion);
+$response = $mpesa->b2cTransaction($oversationId, $commandID, $msisdn, $amount, $remarks, $resultUrl, $timeoutUrl, $ocassion);
 ```
+
+- `$ocassion` is an optional field.
 
 ### Business to Business (B2B) Transactions
 
 You can perform Business to Business transactions:
 
 ```php
-$response = $mpesa->b2bPaybill($destShortcode, $amount, $remarks, $accountNumber, $requester);
+$response = $mpesa->b2bPaybill($destShortcode, $amount, $remarks, $accountNumber, $resultUrl, $timeoutUrl, $requester);
 ```
+
+- `$requester` is an optional field.
 
 ### QR Code Generation
 
 You can generate QR codes for making payments:
 
 ```php
-$response = $mpesa->dynamicQR($merchantName, $refNo, $amount, $trxCode, $cpi, $size);
+$response = $mpesa->dynamicQR($merchantName, $refNo, $trxCode, $cpi, $size, $amount = null);
 ```
+
+- `$amount` is an optional field
 
 ### Bill Manager
 
 You can optin to the bill manager service and send invoices:
 
 ```php
-$response = $mpesa->billManagerOptin($email, $phoneNumber);
+$response = $mpesa->billManagerOptin($email, $phoneNumber, $sendReminders, $logoUrl, $callbackUrl);
+
+- `$sendReminders` is a boolean field. Allows true or false
 
 $response = $mpesa->sendInvoice($reference, $billedTo, $phoneNumber, $billingPeriod, $invoiceName, $dueDate, $amount, $items);
 ```
@@ -159,7 +167,7 @@ $response = $mpesa->sendInvoice($reference, $billedTo, $phoneNumber, $billingPer
 You can remit tax to the government:
 
 ```php
-$response = $mpesa->taxRemittance($amount, $receiverShortCode, $accountReference, $remarks);
+$response = $mpesa->taxRemittance($amount, $receiverShortCode, $accountReference, $remarks, $resultUrl, $timeoutUrl);
 ```
 
 ## License
