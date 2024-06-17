@@ -31,9 +31,9 @@ class MpesaServiceProvider extends ServiceProvider
             // Publish the mpesa config file
             $this->publishes([
                 __DIR__ . '/../config/mpesa.php' => config_path('mpesa.php')
-            ], 'config'); // Register InstallAkikaMpesaPackage command
+            ], 'config'); // Register InstallAkikaMpesaMultivendorPackage command
 
-            // Register InstallAkikaMpesaPackage command
+            // Register InstallAkikaMpesaMultivendorPackage command
             $this->commands([
                 Commands\InstallAkikaMpesaMultivendorPackage::class
             ]);
