@@ -35,8 +35,7 @@ class MpesaServiceProvider extends ServiceProvider
 
             // Register InstallAkikaMpesaPackage command
             $this->commands([
-                Commands\InstallAkikaMpesaPackage::class,
-                Commands\AkikaRegisterC2BUrls::class
+                Commands\InstallAkikaMpesaMultivendorPackage::class
             ]);
         }
     }

@@ -606,7 +606,7 @@ class Mpesa
      * 
      */
 
-    public function dynamicQR($merchantName, $refNo, $amount = null, $trxCode, $cpi, $size)
+    public function dynamicQR($merchantName, $refNo, $trxCode, $cpi, $size, $amount = null)
     {
         $url = $this->url . '/mpesa/qrcode/v1/generate';
         $data = [
