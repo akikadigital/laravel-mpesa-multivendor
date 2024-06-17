@@ -156,11 +156,11 @@ You can optin to the bill manager service and send invoices:
 
 ```php
 $response = $mpesa->billManagerOptin($email, $phoneNumber, $sendReminders, $logoUrl, $callbackUrl);
+```
 
 - `$sendReminders` is a boolean field. Allows true or false
 
 $response = $mpesa->sendInvoice($reference, $billedTo, $phoneNumber, $billingPeriod, $invoiceName, $dueDate, $amount, $items);
-```
 
 ### Tax Remittance
 
