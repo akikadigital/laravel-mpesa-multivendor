@@ -1,6 +1,6 @@
 {
     "name": "akika/laravel-mpesa-multivendor",
-    "description": "A cool Mpesa Daraja package for Laravel supporting Laravel version 5 and above. This package will allow using more than one shortcodes.",
+    "description": "A Laravel package for integrating multiple Mpesa shortcodes in a single application, allowing seamless Mpesa transactions for multiple vendors",
     "homepage": "https://github.com/akikadigital/laravel-mpesa-multivendor",
     "type": "library",
     "keywords": [
@@ -33,7 +33,7 @@
     "extra": {
 		"laravel": {
 			"providers": [
-				"Akika\\LaravelMpesaMultivendor\\MpesaServiceProvider"
+				"Akika\\LaravelMpesaMultivendor\\MpesaMultivendorServiceProvider"
 			],
 			"aliases": {
 				"Mpesa": "Akika\\LaravelMpesaMultivendor\\Facades\\Mpesa"
