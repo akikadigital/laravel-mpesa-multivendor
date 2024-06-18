@@ -33,7 +33,7 @@
     "extra": {
 		"laravel": {
 			"providers": [
-				"Akika\\LaravelMpesaMultivendor\\MpesaMultivendorServiceProvider"
+				"Akika\\LaravelMpesaMultivendor\\MpesaServiceProvider"
 			],
 			"aliases": {
 				"Mpesa": "Akika\\LaravelMpesaMultivendor\\Facades\\Mpesa"
