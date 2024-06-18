@@ -39,7 +39,7 @@ All responses, except the token generation response, conform to the responses do
 ### Initializing Mpesa
 
 ```php
-use Akika\LaravelMpesa\Mpesa;
+use Akika\LaravelMpesaMultivendor\Mpesa;
 
 $mpesa = new Mpesa($mpesaShortcode, $consumerKey, $consumerSecret, $apiUsername, $apiPassword);
 ```
