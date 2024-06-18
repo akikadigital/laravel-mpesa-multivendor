@@ -4,7 +4,7 @@ namespace Akika\LaravelMpesaMultivendor;
 
 use Illuminate\Support\ServiceProvider;
 
-class MpesaMultivendorServiceProvider extends ServiceProvider
+class MpesaServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
