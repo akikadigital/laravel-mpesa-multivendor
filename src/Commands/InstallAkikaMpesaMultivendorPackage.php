@@ -1,6 +1,6 @@
 <?php
 
-namespace Akika\LaravelMpesa\Commands;
+namespace Akika\LaravelMpesaMultivendor\Commands;
 
 use Illuminate\Console\Command;
 

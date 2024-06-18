@@ -1,6 +1,6 @@
 <?php
 
-namespace Akika\LaravelMpesa\Models;
+namespace Akika\LaravelMpesaMultivendor\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

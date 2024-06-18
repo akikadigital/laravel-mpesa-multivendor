@@ -1,11 +1,9 @@
 <?php
 
-namespace Akika\LaravelMpesa;
+namespace Akika\LaravelMpesaMultivendor;
 
-use Akika\LaravelMpesa\Models\Token;
 use Akika\LaravelMpesa\Traits\MpesaTrait;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Http;
 
 class Mpesa
 {
@@ -28,7 +26,7 @@ class Mpesa
      * Initialize the Mpesa class with the necessary credentials
      */
 
-    public function __construct($mpesaShortcode, $consumerKey, $consumerSecret, $apiUsername, $apiPassword)
+    public function __construct($mpesaShortcode = null, $consumerKey = null, $consumerSecret = null, $apiUsername = null, $apiPassword = null)
     {
         $this->environment = config('mpesa.env');
         $this->debugMode = config('mpesa.debug');
