@@ -2,7 +2,7 @@
 
 namespace Akika\LaravelMpesaMultivendor;
 
-use Akika\LaravelMpesa\Traits\MpesaTrait;
+use Akika\LaravelMpesaMultivendor\Traits\MpesaTrait;
 use Carbon\Carbon;
 
 class Mpesa
