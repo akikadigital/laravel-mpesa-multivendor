@@ -587,7 +587,7 @@ class Mpesa
     /**
      * This API enables you to transfer money from one company to another company within the same organization.
      * The transaction moves money from the organization’s working account to another organization’s utility account.
-     * @param $receiverShortCode - The shortcode of the organization that receives the transaction
+     * @param $destShortcode - The shortcode of the organization that receives the transaction
      * @param $partnerName - The name of the organization that receives the transaction
      * @param $amount - The amount to be paid
      * @param $paymentReference - The reference for the payment
@@ -597,11 +597,11 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function b2bExpressCheckout($receiverShortCode, $partnerName, $amount, $paymentReference, $callbackUrl, $requestRefID) {
+    public function b2bExpressCheckout($destShortcode, $partnerName, $amount, $paymentReference, $callbackUrl, $requestRefID) {
         $url = $this->url . '/v1/ussdpush/get-msisdn';
         $data = [
             'primaryShortCode' => $this->mpesaShortCode,
-            'receiverShortCode' => $receiverShortCode,
+            'receiverShortCode' => $destShortcode,
             'partnerName' => $partnerName,
             'amount' => floor($amount),
             'paymentRef' => $paymentReference,
