@@ -585,6 +585,50 @@ class Mpesa
     }
 
     /**
+     * This API enables you to transfer money from one company to another company within the same organization.
+     * The transaction moves money from the organization’s working account to another organization’s utility account.
+     * @param $receiverShortCode - The shortcode of the organization that receives the transaction
+     * @param $partnerName - The name of the organization that receives the transaction
+     * @param $amount - The amount to be paid
+     * @param $paymentReference - The reference for the payment
+     * @param $callbackUrl - The endpoint that receives the response of the transaction
+     * @param $requestRefID - The unique reference for the transaction
+     * 
+     * @result - The result of the request: \Illuminate\Http\Client\Response
+     */
+
+    public function b2bExpressCheckout($receiverShortCode, $partnerName, $amount, $paymentReference, $callbackUrl, $requestRefID) {
+        $url = $this->url . '/v1/ussdpush/get-msisdn';
+        $data = [
+            'primaryShortCode' => $this->mpesaShortCode,
+            'receiverShortCode' => $receiverShortCode,
+            'partnerName' => $partnerName,
+            'amount' => floor($amount),
+            'paymentRef' => $paymentReference,
+            'callbackUrl' => $callbackUrl,
+            'RequestRefID' => $requestRefID
+        ];
+
+        // check if $data['ResultURL] is set and that it is a valid url
+        if (!$this->isValidUrl($data['callbackUrl'])) {
+            // throw an exception instead
+            throw new \Exception('Invalid callback Url');
+        }
+
+        // make the request
+        $result = $this->makeRequest($url, $data);
+
+        // log the request and response data if debug is enabled on the config file
+        if ($this->debugMode) {
+            info('B2B Express Checkout Data: ' . json_encode($data));
+            info('B2B Express Checkout Response Data: ' . $result);
+        }
+
+        // return the result
+        return $result;
+    }
+
+    /**
      * This API is used to query the status of a B2B transaction.
      * This is done by using the M-Pesa code and the phone number used in the transaction.
      * @param $transactionId - This is a unique identifier of the transaction returned in the response of the original transaction.
