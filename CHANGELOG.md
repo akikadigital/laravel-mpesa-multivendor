@@ -33,3 +33,7 @@
 ## 0.0.8
 
 - Adds Mpesa Transaction History API
+
+## 0.0.9
+
+- Updates composer.json
