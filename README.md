@@ -144,102 +144,6 @@ $response = $mpesa->b2cTopup($accountReference, $receiverShortCode, $amount, $re
 - $amount: The transaction amount.
 - $remarks: Any additional information to be associated with the transaction.
 
-#### Succssful result body
-
-```php
-{
- "Result":
- {
-   "ResultType": "0",
-   "ResultCode":"0",
-   "ResultDesc": "The service request is processed successfully",
-   "OriginatorConversationID":"626f6ddf-ab37-4650-b882-b1de92ec9aa4",
-   "ConversationID":"12345677dfdf89099B3",
-   "TransactionID":"QKA81LK5CY",
-   "ResultParameters":
-     {
-       "ResultParameter":
-          [{
-           "Key":"DebitAccountBalance",
-           "Value":"{Amount={CurrencyCode=KES, MinimumAmount=618683, BasicAmount=6186.83}}"
-          },
-          {
-          "Key":"Amount",
-           "Value":"190.00"
-          },
-           {
-          "Key":"DebitPartyAffectedAccountBalance",
-           "Value":"Working Account|KES|346568.83|6186.83|340382.00|0.00"
-          },
-           {
-          "Key":"TransCompletedTime",
-           "Value":"20221110110717"
-          },
-           {
-          "Key":"DebitPartyCharges",
-           "Value":""
-          },
-           {
-          "Key":"ReceiverPartyPublicName",
-           "Value":000000– Biller Companty
-          },
-          {
-          "Key":"Currency",
-           "Value":"KES"
-          },
-          {
-           "Key":"InitiatorAccountCurrentBalance",
-           "Value":"{Amount={CurrencyCode=KES, MinimumAmount=618683, BasicAmount=6186.83}}"
-          }]
-       },
-     "ReferenceData":
-       {
-        "ReferenceItem":[
-           {"Key":"BillReferenceNumber", "Value":"19008"},
-           {"Key":"QueueTimeoutURL", "Value":"https://mydomain.com/b2b/businessbuygoods/queue/"}
-         ]
-      }
- }
-}
-```
-
-#### Unsuccessful reusult body
-
-```php
-{
- "Result":
- {
-   "ResultType":0,
-   "ResultCode":2001,
-   "ResultDesc":"The initiator information is invalid.",
-   "OriginatorConversationID":"12337-23509183-5",
-   "ConversationID":"AG_20200120_0000657265d5fa9ae5c0",
-   "TransactionID":"OAK0000000",
-   "ResultParameters":{
-     "ResultParameter":{
-        "Key":"BillReferenceNumber",
-        "Value":12323333
-      }
-   },
-   "ReferenceData":{
-     "ReferenceItem":[
-      {
-        "Key":"BillReferenceNumber",
-        "Value":12323333
-      },
-      {
-        "Key":"QueueTimeoutURL",
-        "Value":"https://internalapi.safaricom.co.ke/mpesa/abresults/v1/submit"
-      }
-      {
-        "Key":"Occassion"
-      }
-     ]
-    }
- }
-}
-```
-
 ### Business to Business (B2B) Transactions
 
 You can perform Business to Business transactions:
@@ -310,6 +214,106 @@ $response has the following as a json object
     "ConversationID": "AG_20230420_2010759fd5662ef6d054",
     "ResponseCode": "0",
     "ResponseDescription": "Accept the service request successfully."
+}
+```
+
+## Succssful result body
+
+A successful result body has the following structure
+
+```php
+{
+ "Result":
+ {
+   "ResultType": "0",
+   "ResultCode":"0",
+   "ResultDesc": "The service request is processed successfully",
+   "OriginatorConversationID":"626f6ddf-ab37-4650-b882-b1de92ec9aa4",
+   "ConversationID":"12345677dfdf89099B3",
+   "TransactionID":"QKA81LK5CY",
+   "ResultParameters":
+     {
+       "ResultParameter":
+          [{
+           "Key":"DebitAccountBalance",
+           "Value":"{Amount={CurrencyCode=KES, MinimumAmount=618683, BasicAmount=6186.83}}"
+          },
+          {
+          "Key":"Amount",
+           "Value":"190.00"
+          },
+           {
+          "Key":"DebitPartyAffectedAccountBalance",
+           "Value":"Working Account|KES|346568.83|6186.83|340382.00|0.00"
+          },
+           {
+          "Key":"TransCompletedTime",
+           "Value":"20221110110717"
+          },
+           {
+          "Key":"DebitPartyCharges",
+           "Value":""
+          },
+           {
+          "Key":"ReceiverPartyPublicName",
+           "Value":000000– Biller Companty
+          },
+          {
+          "Key":"Currency",
+           "Value":"KES"
+          },
+          {
+           "Key":"InitiatorAccountCurrentBalance",
+           "Value":"{Amount={CurrencyCode=KES, MinimumAmount=618683, BasicAmount=6186.83}}"
+          }]
+       },
+     "ReferenceData":
+       {
+        "ReferenceItem":[
+           {"Key":"BillReferenceNumber", "Value":"19008"},
+           {"Key":"QueueTimeoutURL", "Value":"https://mydomain.com/b2b/businessbuygoods/queue/"}
+         ]
+      }
+ }
+}
+```
+
+## Unsuccessful reusult body
+
+An unsuccessful result body has the following structure
+
+```php
+{
+ "Result":
+ {
+   "ResultType":0,
+   "ResultCode":2001,
+   "ResultDesc":"The initiator information is invalid.",
+   "OriginatorConversationID":"12337-23509183-5",
+   "ConversationID":"AG_20200120_0000657265d5fa9ae5c0",
+   "TransactionID":"OAK0000000",
+   "ResultParameters":{
+     "ResultParameter":{
+        "Key":"BillReferenceNumber",
+        "Value":12323333
+      }
+   },
+   "ReferenceData":{
+     "ReferenceItem":[
+      {
+        "Key":"BillReferenceNumber",
+        "Value":12323333
+      },
+      {
+        "Key":"QueueTimeoutURL",
+        "Value":"https://internalapi.safaricom.co.ke/mpesa/abresults/v1/submit"
+      }
+      {
+        "Key":"Occassion"
+      }
+     ]
+    }
+ }
 }
 ```
 
