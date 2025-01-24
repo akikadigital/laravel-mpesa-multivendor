@@ -300,6 +300,19 @@ $response = $mpesa->ratiba($name, $startDate, $endDate, $transactionType, $type,
 - $transactionDesc: This is any additional information/comment that can be sent along with the request from your system. Maximum of 13 Characters
 - $frequency: The frequency of the standing order (one-off, daily, weekly, monthly, bi-monthly, quarterly, half-year, annually)
 
+## API Response Body
+
+$response has the following as a json object
+
+```php
+{
+    "OriginatorConversationID": "5118-111210482-1",
+    "ConversationID": "AG_20230420_2010759fd5662ef6d054",
+    "ResponseCode": "0",
+    "ResponseDescription": "Accept the service request successfully."
+}
+```
+
 ## License
 
 The Laravel Mpesa package is open-sourced software licensed under the MIT license. See the LICENSE file for details.
