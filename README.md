@@ -228,6 +228,38 @@ $response = $mpesa->ratiba($name, $startDate, $endDate, $transactionType, $type,
 - $transactionDesc: This is any additional information/comment that can be sent along with the request from your system. Maximum of 13 Characters
 - $frequency: The frequency of the standing order (one-off, daily, weekly, monthly, bi-monthly, quarterly, half-year, annually)
 
+### Mpesa Transaction History
+
+The following API takes in the start and and end dates and returns the transactions between that period.
+
+```php
+$response = $mpesa->mpesaTransactionsHistory($startDate, $endDate, $offset = 0);
+```
+
+#### Successful Response
+
+```php
+{
+    "ResponseRefID": "8bab-42cc-bb85-5056a6c01e6915928124",
+    "ResponseCode": "1000",
+    "ResponseMessage": "Success",
+    "Response": [
+        [
+            {
+                "transactionId": "XXXXXXXXX",
+                "trxDate": "2025-01-24T10:56:11+03:00",
+                "msisdn": 2547XXXXXXXX,
+                "sender": "MPESA",
+                "transactiontype": "c2b-buy-goods-debit",
+                "billreference": "",
+                "amount": "2697.0",
+                "organizationname": "VENDOR"
+            }
+        ]
+    ]
+}
+```
+
 ## API Response Body
 
 $response has the following as a json object

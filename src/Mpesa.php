@@ -597,7 +597,8 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function b2bExpressCheckout($destShortcode, $partnerName, $amount, $paymentReference, $callbackUrl, $requestRefID) {
+    public function b2bExpressCheckout($destShortcode, $partnerName, $amount, $paymentReference, $callbackUrl, $requestRefID)
+    {
         $url = $this->url . '/v1/ussdpush/get-msisdn';
         $data = [
             'primaryShortCode' => $this->mpesaShortCode,
@@ -627,6 +628,8 @@ class Mpesa
         // return the result
         return $result;
     }
+
+    // --------------------------------- Transaction Status ---------------------------------
 
     /**
      * This API is used to query the status of a B2B transaction.
@@ -924,6 +927,40 @@ class Mpesa
         if ($this->debugMode) {
             info('Mpesa Ratiba Data: ' . json_encode($data));
             info('Mpesa Ratiba Data: ' . $result);
+        }
+
+        // return the result
+        return $result;
+    }
+
+    // --------------------------------- Mpesa Transactions History ---------------------------------
+
+    /**
+     * This API is used to query the transactions history of a paybill or till number over a period of time.
+     * @param $startDate - The start date of the transactions
+     * @param $endDate - The end date of the transactions
+     * @param $offset - The offset of the transactions
+     * 
+     * @result - The result of the request: \Illuminate\Http\Client\Response
+     */
+
+    public function mpesaTransactionsHistory($startDate, $endDate, $offset = 0)
+    {
+        $url = $this->url . '/pulltransactions/v1/query';
+        $data = [
+            'ShortCode' => $this->mpesaShortCode,
+            'StartDate' => date('Y-m-d H:i:s', strtotime($startDate)),
+            'EndDate' => date('Y-m-d H:i:s', strtotime($endDate)),
+            'OffSetValue' => 0
+        ];
+
+        // make the request
+        $result = $this->makeRequest($url, $data);
+
+        // log the request and response data if debug is enabled on the config file
+        if ($this->debugMode) {
+            info('Mpesa Transactions History Data: ' . json_encode($data));
+            info('Mpesa Transactions History Response Data: ' . $result);
         }
 
         // return the result

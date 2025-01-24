@@ -29,3 +29,7 @@
 - Adds Mpesa B2B Express Checkout
 - Adds B2C account top up
 - Adds MPesa Ratiba API
+
+## 0.0.8
+
+- Adds Mpesa Transaction History API
