@@ -63,6 +63,10 @@ trait MpesaTrait
         return $x;
     }
 
+    /**
+     *   Get the transaction type given the type
+     */
+
     function ratibaTransactionType($type)
     {
         $types = [
@@ -72,6 +76,10 @@ trait MpesaTrait
 
         return $types[$type];
     }
+
+    /**
+     *   Get the frequency given the frequency
+     */
 
     function ratibaFrequency($frequency)
     {
