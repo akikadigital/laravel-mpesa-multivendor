@@ -1,6 +1,22 @@
-## 0.0.5
+## 0.0.1
 
 - Official launch of Laravel Mpesa Multivendor package
+
+## 0.0.2
+
+- Refactors the package name.
+
+## 0.0.3
+
+- Updates composer and README
+
+## 0.0.4
+
+- Updates composer.json file.
+
+## 0.0.5
+
+- Updates Service Provider
 
 ## 0.0.6
 
