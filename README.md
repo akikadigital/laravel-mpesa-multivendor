@@ -131,6 +131,19 @@ $response = $mpesa->b2cTransaction($oversationId, $commandID, $msisdn, $amount, 
 
 - `$ocassion` is an optional field.
 
+### B2C Topup
+
+This API enables you to load funds to a B2C shortcode directly for disbursement. The transaction moves money from your MMF/Working account to the recipient’s utility account.
+
+```php
+$response = $mpesa->b2cTopup($accountReference, $receiverShortCode, $amount, $resultUrl, $timeoutUrl, $remarks);
+```
+
+- $accountReference: A unique (system generated) identifier for the transaction.
+- $receiverShortCode: The shortcode to which money will be moved
+- $amount: The transaction amount.
+- $remarks: Any additional information to be associated with the transaction.
+
 ### Business to Business (B2B) Transactions
 
 You can perform Business to Business transactions:

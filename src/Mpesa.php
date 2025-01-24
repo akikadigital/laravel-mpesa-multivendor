@@ -357,6 +357,62 @@ class Mpesa
     }
 
     /**
+     * This API enables you to load funds to a B2C shortcode directly for disbursement.
+     * The transaction moves money from your MMF/Working account to the recipient’s utility account.
+     * @param $accountReference - The account number to be credited
+     * @param $receiverShortCode - The shortcode of the business receiving the payment
+     * @param $amount - The amount to be paid
+     * @param $resultUrl - The endpoint that receives the response of the transaction
+     * @param $timeoutUrl - The endpoint that receives a timeout response
+     * @param $remarks - Comments that are sent along with the transaction
+     * 
+     * @result - The result of the request: \Illuminate\Http\Client\Response
+     */
+
+    public function b2cTopup($accountReference, $receiverShortCode, $amount, $resultUrl, $timeoutUrl, $remarks)
+    {
+        $url = $this->url . '/mpesa/b2b/v1/paymentrequest';
+        $data = [
+            'Initiator'                 =>  $this->apiUsername,
+            'SecurityCredential'        =>  $this->securityCredential,
+            'CommandID'                 =>  'BusinessPayToBulk',
+            'SenderIdentifierType'      =>  $this->getIdentifierType("shortcode"),
+            'RecieverIdentifierType'    =>  $this->getIdentifierType("shortcode"),
+            'Amount'                    =>  floor($amount),
+            'PartyA'                    =>  $this->mpesaShortCode,
+            'PartyB'                    =>  $receiverShortCode,
+            'AccountReference'          =>  $accountReference,
+            'Requester'                 =>  $this->sanitizePhoneNumber('254708374149'),
+            'Remarks'                   =>  $remarks,
+            'QueueTimeOutURL'           =>  $timeoutUrl,
+            'ResultURL'                 =>  $resultUrl
+        ];
+
+        // check if $data['ResultURL] is set and that it is a valid url
+        if (!$this->isValidUrl($data['ResultURL'])) {
+            // throw an exception instead
+            throw new \Exception('Invalid ResultURL');
+        }
+
+        if (!$this->isValidUrl($data['QueueTimeOutURL'])) {
+            // throw an exception instead
+            throw new \Exception('Invalid QueueTimeOutURL');
+        }
+
+        // make the request
+        $result = $this->makeRequest($url, $data);
+
+        // log the request and response data if debug is enabled on the config file
+        if ($this->debugMode) {
+            info('B2C Topup Data: ' . json_encode($data));
+            info('B2C Topup Data: ' . $result);
+        }
+
+        // return the result
+        return $result;
+    }
+
+    /**
      * This API enables Business to Customer (B2C) transactions between a company and customers who are the end-users of its products or services.
      * Unlike b2cTransaction, this method validates the transaction before processing it.
      * @param $commandID - This is a unique command that specifies B2C transaction type.
