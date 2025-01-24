@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 
 class InstallAkikaMpesaMultivendorPackage extends Command
 {
-    protected $signature = 'mpesa:install';
+    protected $signature = 'mpesa-multivendor:install';
 
     protected $description = 'Publish Akika/LaravelMpesaMultivendor package migrations';
 

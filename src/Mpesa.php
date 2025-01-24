@@ -12,7 +12,7 @@ class Mpesa
     public $environment;
     public $url;
 
-    public $mpesaShortcode;
+    public $mpesaShortCode;
     public $apiUsername;
     public $apiPassword;
     public $securityCredential;
@@ -26,13 +26,13 @@ class Mpesa
      * Initialize the Mpesa class with the necessary credentials
      */
 
-    public function __construct($mpesaShortcode = null, $consumerKey = null, $consumerSecret = null, $apiUsername = null, $apiPassword = null)
+    public function __construct($mpesaShortCode, $consumerKey, $consumerSecret, $apiUsername, $apiPassword)
     {
         $this->environment = config('mpesa.env');
         $this->debugMode = config('mpesa.debug');
-        $this->url = $this->environment === 'sandbox' ? 'https://sandbox.safaricom.co.ke' : 'https://api.safaricom.co.ke';
+        $this->url = config('mpesa.' . $this->environment . '.url');
 
-        $this->mpesaShortcode = $mpesaShortcode;
+        $this->mpesaShortCode = $mpesaShortCode;
         $this->consumerKey = $consumerKey;
         $this->consumerSecret = $consumerSecret;
 
@@ -55,7 +55,7 @@ class Mpesa
             'Initiator'             => $this->apiUsername, // This is the credential/username used to authenticate the transaction request
             'SecurityCredential'    => $this->securityCredential, // Base64 encoded string of the M-PESA short code and password, which is encrypted using M-PESA public key and validates the transaction on M-PESA Core system.
             'CommandID'             => 'AccountBalance', // A unique command is passed to the M-PESA system.
-            'PartyA'                => $this->mpesaShortcode, // The shortcode of the organization querying for the account balance.
+            'PartyA'                => $this->mpesaShortCode, // The shortcode of the organization querying for the account balance.
             'IdentifierType'        => $this->getIdentifierType("shortcode"), // Type of organization querying for the account balance.
             'Remarks'               => "balance", // String sequence of characters up to 100
             'QueueTimeOutURL'       => $resultUrl, // The timeout end-point that receives a timeout response.
@@ -97,7 +97,7 @@ class Mpesa
         $url = $this->url . '/mpesa/c2b/v2/registerurl';
 
         $data = [
-            'ShortCode'     => $this->mpesaShortcode,
+            'ShortCode'     => $this->mpesaShortCode,
             'ResponseType'   => 'Completed', // [Canceled | Completed] . Default is Completed.
             'ConfirmationURL' => $confirmationUrl,
             'ValidationURL' => $validationUrl
@@ -144,7 +144,7 @@ class Mpesa
     {
         $url = $this->url . '/mpesa/c2b/v1/simulate';
         $data = [
-            'ShortCode'     => $this->mpesaShortcode,
+            'ShortCode'     => $this->mpesaShortCode,
             'CommandID'     => $commandID, // CustomerPayBillOnline | CustomerBuyGoodsOnline
             'Amount'        => floor($amount), // remove decimal points
             'Msisdn'        => $this->sanitizePhoneNumber($phoneNumber),
@@ -181,13 +181,13 @@ class Mpesa
     {
         $url = $this->url . '/mpesa/stkpush/v1/processrequest';
         $data = [
-            'BusinessShortCode'     => $this->mpesaShortcode,
+            'BusinessShortCode'     => $this->mpesaShortCode,
             'Password'              => $this->generatePassword(), // base64.encode(Shortcode+Passkey+Timestamp)
             'Timestamp'             => Carbon::rawParse('now')->format('YmdHis'),
             'TransactionType'       => 'CustomerPayBillOnline',
             'Amount'                => floor($amount), // remove decimal points
             'PartyA'                => $this->sanitizePhoneNumber($phoneNumber),
-            'PartyB'                => $this->mpesaShortcode,
+            'PartyB'                => $this->mpesaShortCode,
             'PhoneNumber'           => $this->sanitizePhoneNumber($phoneNumber),
             'AccountReference'      => $accountNumber, //Account Number for a paybill..Maximum of 12 Characters.,
             'TransactionDesc'       => $transactionDesc ? substr($transactionDesc, 0, 13) : 'STK Push', // Should not exceed 13 characters
@@ -197,7 +197,7 @@ class Mpesa
         // check if $data['CallBackURL] is set and that it is a valid url
         if (!$this->isValidUrl($data['CallBackURL'])) {
             // throw an exception instead
-            throw new \Exception('Invalid CallBackURL');
+            throw new \Exception('Invalid callback Url');
         }
 
         // make the request
@@ -226,7 +226,7 @@ class Mpesa
     {
         $url = $this->url . '/mpesa/stkpushquery/v1/query';
         $data = [
-            'BusinessShortCode'     => $this->mpesaShortcode,
+            'BusinessShortCode'     => $this->mpesaShortCode,
             'Password'              => $this->generatePassword(),
             'Timestamp'             => Carbon::rawParse('now')->format('YmdHis'), // Date in format - YYYYMMDDHHmmss
             'CheckoutRequestID'     => $checkoutRequestID // This is a global unique identifier of the processed checkout transaction request.
@@ -324,7 +324,7 @@ class Mpesa
             'SecurityCredential'        =>  $this->securityCredential, // This is the value obtained after encrypting the API initiator password.
             'CommandID'                 =>  $commandID, // This is a unique command that specifies B2C transaction type.
             'Amount'                    =>  floor($amount), // remove decimal points
-            'PartyA'                    =>  $this->mpesaShortcode,
+            'PartyA'                    =>  $this->mpesaShortCode,
             'PartyB'                    =>  $this->sanitizePhoneNumber($msisdn),
             'Remarks'                   =>  $remarks,
             'Occassion'                 =>  $ocassion ? substr($ocassion, 0, 100) : '', // Can be null
@@ -377,7 +377,7 @@ class Mpesa
             'SecurityCredential'        =>  $this->securityCredential,
             'CommandID'                 =>  $commandID,
             'Amount'                    =>  floor($amount), // remove decimal points
-            'PartyA'                    =>  $this->mpesaShortcode,
+            'PartyA'                    =>  $this->mpesaShortCode,
             'PartyB'                    =>  $this->sanitizePhoneNumber($msisdn),
             'Remarks'                   =>  $remarks,
             'Occasion'                  =>  $ocassion, // Can be null
@@ -437,7 +437,7 @@ class Mpesa
             'SenderIdentifierType'      =>  $this->getIdentifierType("shortcode"),
             'RecieverIdentifierType'    =>  $this->getIdentifierType("shortcode"),
             'Amount'                    =>  floor($amount), // remove decimal points
-            'PartyA'                    =>  $this->mpesaShortcode,
+            'PartyA'                    =>  $this->mpesaShortCode,
             'PartyB'                    =>  $destShortcode,
             'AccountReference'          =>  $accountNumber, // The account number to be associated with the payment. Up to 13 characters.
             'Requester'                 =>  $this->sanitizePhoneNumber($requester), // Optional. The consumer’s mobile number on behalf of whom you are paying.
@@ -494,7 +494,7 @@ class Mpesa
             'SenderIdentifierType'      =>  $this->getIdentifierType("shortcode"),
             'RecieverIdentifierType'    =>  $this->getIdentifierType("shortcode"),
             'Amount'                    =>  floor($amount), // remove decimal points
-            'PartyA'                    =>  $this->mpesaShortcode,
+            'PartyA'                    =>  $this->mpesaShortCode,
             'PartyB'                    =>  $destShortcode,
             'AccountReference'          =>  $accountNumber, // The account number to be associated with the payment. Up to 13 characters.
             'Requester'                 =>  $this->sanitizePhoneNumber($requester), // Optional. The consumer’s mobile number on behalf of whom you are paying.
@@ -549,7 +549,7 @@ class Mpesa
             'SecurityCredential'        =>  $this->securityCredential,
             'CommandID'                 =>  'TransactionStatusQuery',
             'TransactionID'             =>  $transactionId, //Organization Receiving the funds. e.g. LXXXXXX1234
-            'PartyA'                    =>  $this->mpesaShortcode,
+            'PartyA'                    =>  $this->mpesaShortCode,
             'IdentifierType'            =>  $this->getIdentifierType($identifierType),
             'Remarks'                   =>  $remarks,
             'Occasion'                  =>  NULL,
@@ -644,7 +644,7 @@ class Mpesa
     {
         $url = $this->url . "/v1/billmanager-invoice/optin";
         $data = [
-            'ShortCode'         => $this->mpesaShortcode,
+            'ShortCode'         => $this->mpesaShortCode,
             'email'             => $email,
             'officialContact'   => $this->sanitizePhoneNumber($phoneNumber),
             'sendReminders'     => $sendReminders ? 1 : 0, // [0 | 1] This field gives you the flexibility as a business to enable or disable sms payment reminders for invoices sent.
@@ -655,7 +655,7 @@ class Mpesa
         // check if $data['callbackurl] is set and that it is a valid url
         if (!$this->isValidUrl($data['callbackurl'])) {
             // throw an exception instead
-            throw new \Exception('Invalid callbackurl');
+            throw new \Exception('Invalid callback Url');
         }
 
         // make the request
@@ -742,7 +742,7 @@ class Mpesa
             'SenderIdentifierType'      => $this->getIdentifierType("shortcode"),
             'RecieverIdentifierType'    => $this->getIdentifierType("shortcode"),
             'Amount'                    => floor($amount),
-            'PartyA'                    => $this->mpesaShortcode,
+            'PartyA'                    => $this->mpesaShortCode,
             'PartyB'                    => $receiverShortCode,
             'AccountReference'          => $accountReference,
             'Remarks'                   => $remarks ?? 'Tax remittance',
@@ -769,6 +769,61 @@ class Mpesa
         if ($this->debugMode) {
             info('Tax Remittance Data: ' . json_encode($data));
             info('Tax Remittance Response Data: ' . $result);
+        }
+
+        // return the result
+        return $result;
+    }
+
+    // --------------------------------- Standing Orders ---------------------------------
+    /**
+     * This API is used to create a standing order.
+     * A standing order is an instruction to a bank to pay a fixed amount at regular intervals from one account to another.
+     * @param $name - The name of the standing order
+     * @param $startDate - The date the standing order should start
+     * @param $endDate - The date the standing order should end
+     * @param $transactionType - The type of transaction (paybill or tillnumber)
+     * @param $amount - The amount to be paid
+     * @param $phoneNumber - The phone number making the payment
+     * @param $callbackUrl - The url to receive the response
+     * @param $accountReference - The account number to be credited
+     * @param $transactionDesc - This is any additional information/comment that can be sent along with the request from your system. Maximum of 13 Characters
+     * @param $frequency - The frequency of the standing order (one-off, daily, weekly, monthly, bi-monthly, quarterly, half-year, annually)
+     * 
+     * @result - The result of the request: \Illuminate\Http\Client\Response
+     */
+
+    public function ratiba($name, $startDate, $endDate, $transactionType, $amount, $phoneNumber, $callbackUrl, $accountReference, $transactionDesc, $frequency)
+    {
+        $url = $this->url . '/standingorder/v1/createStandingOrderExternal';
+        $data = [
+            'StandingOrderName' => $name,
+            'StartDate' => date('Ymd', strtotime($startDate)),
+            'EndDate' => date('Ymd', strtotime($endDate)),
+            'BusinessShortCode' => $this->mpesaShortCode,
+            'TransactionType' => $this->ratibaTransactionType($transactionType),
+            'ReceiverPartyIdentifierType' => $this->getIdentifierType($transactionType),
+            'Amount' => floor($amount),
+            'PartyA' => $this->sanitizePhoneNumber($phoneNumber),
+            'CallBackURL' => $callbackUrl,
+            'AccountReference' => $accountReference,
+            'TransactionDesc' => $transactionDesc,
+            'Frequency' => $this->ratibaFrequency($frequency),
+        ];
+
+        // check if $data['CallBackURL] is set and that it is a valid url
+        if (!$this->isValidUrl($data['CallBackURL'])) {
+            // throw an exception instead
+            throw new \Exception('Invalid callback Url');
+        }
+
+        // make the request
+        $result = $this->makeRequest($url, $data);
+
+        // log the request and response data if debug is enabled on the config file
+        if ($this->debugMode) {
+            info('Mpesa Ratiba Data: ' . json_encode($data));
+            info('Mpesa Ratiba Data: ' . $result);
         }
 
         // return the result

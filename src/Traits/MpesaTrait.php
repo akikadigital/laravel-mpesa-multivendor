@@ -56,8 +56,37 @@ trait MpesaTrait
             case "shortcode":
                 $x = 4;
                 break;
+            case "paybill":
+                $x = 4;
+                break;
         }
         return $x;
+    }
+
+    function ratibaTransactionType($type)
+    {
+        $types = [
+            'paybill' => 'Standing Order Customer Pay Bill',
+            'tillnumber' => 'Standing Order Customer Pay Marchant',
+        ];
+
+        return $types[$type];
+    }
+
+    function ratibaFrequency($frequency)
+    {
+        $frequencies = [
+            'one-off' => 1,
+            'daily' => 2,
+            'weekly' => 3,
+            'monthly' => 4,
+            'bi-monthly' => 5,
+            'quarterly' => 6,
+            'half-year' => 7,
+            'yearly' => 8,
+        ];
+
+        return $frequencies[$frequency];
     }
 
     /**
@@ -109,7 +138,7 @@ trait MpesaTrait
     {
         // check if $url is a valid url and has not include keywords like mpesa,safaricom etc
         if (filter_var($url, FILTER_VALIDATE_URL)) {
-            if (strpos($url, 'mpesa') !== false || strpos($url, 'safaricom') !==false || strpos($url, 'daraja') !== false) {
+            if (strpos($url, 'mpesa') !== false || strpos($url, 'safaricom') !== false || strpos($url, 'daraja') !== false) {
                 return false;
             }
             return true;
