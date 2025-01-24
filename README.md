@@ -45,18 +45,18 @@ use Akika\LaravelMpesaMultivendor\Mpesa;
 $mpesa = new Mpesa($mpesaShortcode, $consumerKey, $consumerSecret, $apiUsername, $apiPassword);
 ```
 
-- $mpesaShortcode: The shortcode to use for the current operation
-- $consumerKey: Obtained from Daraja portal
-- $consumerSecret: Obtained from Daraja portal
-- $apiUsername: Mpesa portal API user's username
-- $apiPassword: Mpesa portal API user's password
+- `$mpesaShortcode`: The shortcode to use for the current operation
+- `$consumerKey`: Obtained from Daraja portal
+- `$consumerSecret`: Obtained from Daraja portal
+- `$apiUsername`: Mpesa portal API user's username
+- `$apiPassword`: Mpesa portal API user's password
 
 ### Important Urls
 
 Daraja utilizes the two main urls for callbacks. Timeout Url and Result Url. The two urls will also be used in this package as follows:
 
-- $resultUrl : Endpoint to send the results in case of success
-- $timeoutUrl : Endpoint to send the results in case of operations timeout
+- `$resultUrl` : Endpoint to send the results in case of success
+- `$timeoutUrl` : Endpoint to send the results in case of operations timeout
 
 ### Fetching Token
 
