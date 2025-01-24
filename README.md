@@ -203,6 +203,43 @@ $response = $mpesa->b2cTopup($accountReference, $receiverShortCode, $amount, $re
 }
 ```
 
+#### Unsuccessful reusult body
+
+```php
+{
+ "Result":
+ {
+   "ResultType":0,
+   "ResultCode":2001,
+   "ResultDesc":"The initiator information is invalid.",
+   "OriginatorConversationID":"12337-23509183-5",
+   "ConversationID":"AG_20200120_0000657265d5fa9ae5c0",
+   "TransactionID":"OAK0000000",
+   "ResultParameters":{
+     "ResultParameter":{
+        "Key":"BillReferenceNumber",
+        "Value":12323333
+      }
+   },
+   "ReferenceData":{
+     "ReferenceItem":[
+      {
+        "Key":"BillReferenceNumber",
+        "Value":12323333
+      },
+      {
+        "Key":"QueueTimeoutURL",
+        "Value":"https://internalapi.safaricom.co.ke/mpesa/abresults/v1/submit"
+      }
+      {
+        "Key":"Occassion"
+      }
+     ]
+    }
+ }
+}
+```
+
 ### Business to Business (B2B) Transactions
 
 You can perform Business to Business transactions:
