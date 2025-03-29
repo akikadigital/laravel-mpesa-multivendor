@@ -58,8 +58,8 @@ class Mpesa
             'PartyA'                => $this->mpesaShortCode, // The shortcode of the organization querying for the account balance.
             'IdentifierType'        => $this->getIdentifierType("shortcode"), // Type of organization querying for the account balance.
             'Remarks'               => "balance", // String sequence of characters up to 100
-            'QueueTimeOutURL'       => $resultUrl, // The timeout end-point that receives a timeout response.
-            'ResultURL'             => $timeoutUrl
+            'QueueTimeOutURL'       => $timeoutUrl, // The timeout end-point that receives a timeout response.
+            'ResultURL'             => $resultUrl
         ];
 
         // check if $data['ResultURL'] is set and that it is a valid url

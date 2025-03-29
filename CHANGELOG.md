@@ -41,3 +41,7 @@
 ## 0.1.0
 
 - Updates typo on b2cTransaction conversationId
+
+## 0.1.1
+
+- Updates result url for fetch balance
