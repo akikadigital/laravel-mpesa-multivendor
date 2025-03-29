@@ -30,6 +30,9 @@ trait MpesaTrait
 
     function makeRequest($url, $body)
     {
+        if ($this->debugMode) {
+            info('Invoked URL: ' . $url);
+        }
         // Convert the above code to use Http
         $token = json_decode($this->getToken());
         $response = Http::withToken($token->access_token)

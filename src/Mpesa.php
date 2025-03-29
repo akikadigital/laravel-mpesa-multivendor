@@ -39,6 +39,11 @@ class Mpesa
         $this->apiUsername = $apiUsername;
         $this->apiPassword = $apiPassword;
         $this->securityCredential = $this->generateCertificate();
+
+        if ($this->debugMode) {
+            info('Environment: ' . $this->environment);
+            info('URL: ' . $this->url);
+        }
     }
 
     // --------------------------------- Account Balance ---------------------------------
