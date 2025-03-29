@@ -45,3 +45,11 @@
 ## 0.1.1
 
 - Updates result url for fetch balance
+
+## 0.1.2
+
+- Updates logging
+
+## 0.1.3
+
+- Updates generatePassword function
