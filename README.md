@@ -42,7 +42,7 @@ All responses, except the token generation response, conform to the responses do
 ```php
 use Akika\LaravelMpesaMultivendor\Mpesa;
 
-$mpesa = new Mpesa($mpesaShortcode, $consumerKey, $consumerSecret, $apiUsername, $apiPassword);
+$mpesa = new Mpesa($mpesaShortCode, $consumerKey, $consumerSecret, $apiUsername, $apiPassword, $passKey = null);
 ```
 
 - `$mpesaShortcode`: The shortcode to use for the current operation
@@ -50,6 +50,7 @@ $mpesa = new Mpesa($mpesaShortcode, $consumerKey, $consumerSecret, $apiUsername,
 - `$consumerSecret`: Obtained from Daraja portal
 - `$apiUsername`: Mpesa portal API user's username
 - `$apiPassword`: Mpesa portal API user's password
+- `$passKey`: Optional field used for C2B transactions
 
 ### Important Urls
 

@@ -17,6 +17,7 @@ class Mpesa
     public $apiPassword;
     public $securityCredential;
 
+    public $passKey;
     public $consumerKey;
     public $consumerSecret;
 
@@ -26,7 +27,7 @@ class Mpesa
      * Initialize the Mpesa class with the necessary credentials
      */
 
-    public function __construct($mpesaShortCode, $consumerKey, $consumerSecret, $apiUsername, $apiPassword)
+    public function __construct($mpesaShortCode, $consumerKey, $consumerSecret, $apiUsername, $apiPassword, $passKey = null)
     {
         $this->environment = config('mpesa.env');
         $this->debugMode = config('mpesa.debug');
@@ -35,6 +36,7 @@ class Mpesa
         $this->mpesaShortCode = $mpesaShortCode;
         $this->consumerKey = $consumerKey;
         $this->consumerSecret = $consumerSecret;
+        $this->passKey = $passKey;
 
         $this->apiUsername = $apiUsername;
         $this->apiPassword = $apiPassword;

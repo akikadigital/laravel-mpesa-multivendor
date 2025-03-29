@@ -107,9 +107,7 @@ trait MpesaTrait
     function generatePassword()
     {
         $timestamp = Carbon::now()->format('YmdHis');
-        $shortcode = config('mpesa.shortcode');
-        $passkey = config('mpesa.stk_passkey');
-        $password = base64_encode($shortcode . $passkey . $timestamp);
+        $password = base64_encode($this->mpesaShortCode . $this->passKey . $timestamp);
 
         return $password;
     }
@@ -125,7 +123,7 @@ trait MpesaTrait
         } else {
             $publicKey = File::get(__DIR__ . '/../../certificates/ProductionCertificate.cer');
         }
-        openssl_public_encrypt(config('mpesa.initiator_password'), $encrypted, $publicKey, OPENSSL_PKCS1_PADDING);
+        openssl_public_encrypt($this->apiPassword, $encrypted, $publicKey, OPENSSL_PKCS1_PADDING);
 
         return base64_encode($encrypted);
     }
