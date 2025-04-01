@@ -69,3 +69,7 @@
 ## 0.1.7
 
 - Updates post to legacy
+
+## 0.1.8
+
+- Reverts changes
