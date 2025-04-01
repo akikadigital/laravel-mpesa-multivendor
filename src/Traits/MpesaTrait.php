@@ -33,9 +33,16 @@ trait MpesaTrait
         if ($this->debugMode) {
             info('Invoked URL: ' . $url);
         }
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer ' . $this->getToken(),
+        ];
+
         // Convert the above code to use Http
         $token = json_decode($this->getToken());
         $response = Http::withToken($token->access_token)
+            ->withHeaders($headers)
             ->acceptJson()
             ->post($url, $body);
 
