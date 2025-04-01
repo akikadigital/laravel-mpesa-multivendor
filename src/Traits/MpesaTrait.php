@@ -34,61 +34,19 @@ trait MpesaTrait
     function makeRequest($url, $body)
     {
         // Convert the above code to use Http
-        // $token = json_decode($this->getToken());
-        // if ($this->debugMode) {
-        //     info('Invoked URL: ' . $url);
-        //     info('Request Body: ' . json_encode($body));
-        //     info('Token: ' . $token->access_token);
-        // }
-
-        // $response = Http::withToken($token->access_token)
-        //     ->contentType('application/json')
-        //     ->acceptJson()
-        //     ->post($url, $body);
-
-        // return $response;
-
-        // $client = new Client();
-        // $token = json_decode($this->getToken());
-        // $headers = [
-        //     'Authorization' => 'Bearer ' . $token->access_token,
-        //     'Content-Type' => 'application/json',
-        // ];
-        // if ($this->debugMode) {
-        //     info('Invoked URL: ' . $url);
-        //     info('Request Body: ' . json_encode($body));
-        //     info('Token: ' . $token->access_token);
-        //     info('Headers: ' . json_encode($headers));
-        // }
-        // $request = new Request('POST', $url, $headers, json_encode($body));
-        // $res = $client->sendAsync($request)->wait();
-        // return $res->getBody();
-
-
         $token = json_decode($this->getToken());
-        $headers = [
-            'Authorization' => 'Bearer ' . $token->access_token,
-            'Content-Type' => 'application/json',
-        ];
         if ($this->debugMode) {
             info('Invoked URL: ' . $url);
             info('Request Body: ' . json_encode($body));
             info('Token: ' . $token->access_token);
-            info('Headers: ' . json_encode($headers));
         }
-        $curl     =     curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($body));
-        $curl_response = curl_exec($curl);
 
-        curl_close($curl);
+        $response = Http::withToken($token->access_token, 'Bearer')
+            ->contentType('application/json')
+            ->acceptJson()
+            ->post($url, $body);
 
-        return $curl_response;
-
+        return $response;
     }
 
     /**
