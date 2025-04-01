@@ -73,3 +73,7 @@
 ## 0.1.8
 
 - Reverts changes
+
+## 0.1.9
+
+- Updates bug on b2cTransaction

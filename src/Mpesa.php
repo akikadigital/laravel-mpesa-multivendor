@@ -309,7 +309,6 @@ class Mpesa
     /**
      * This API enables Business to Customer (B2C) transactions between a company and customers who are the end-users of its products or services.
      * It is used to send money from a company to customers e.g. salaries, winnings, refunds, etc.
-     * @param $coversationId - This is a unique string you specify for every API request you simulate
      * @param $commandID - This is a unique command that specifies B2C transaction type.
             - SalaryPayment: This supports sending money to both registered and unregistered M-Pesa customers.
             - BusinessPayment: This is a normal business to customer payment, supports only M-PESA registered customers.
@@ -322,12 +321,11 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function b2cTransaction($coversationId, $commandID, $msisdn, $amount, $remarks, $resultUrl, $timeoutUrl, $ocassion = null)
+    public function b2cTransaction($commandID, $msisdn, $amount, $remarks, $resultUrl, $timeoutUrl, $ocassion = null)
     {
         $url = $this->url . '/mpesa/b2c/v1/paymentrequest';
         $data = [
-            'OriginatorConversationID'  =>  $coversationId, // This is a unique string you specify for every API request you simulate
-            'apiUsername'               =>  $this->apiUsername, // This is an API user created by the Business Administrator of the M-PESA
+            'InitiatorName'               =>  $this->apiUsername, // This is an API user created by the Business Administrator of the M-PESA
             'SecurityCredential'        =>  $this->securityCredential, // This is the value obtained after encrypting the API initiator password.
             'CommandID'                 =>  $commandID, // This is a unique command that specifies B2C transaction type.
             'Amount'                    =>  floor($amount), // remove decimal points

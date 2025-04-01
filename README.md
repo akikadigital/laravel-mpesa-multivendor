@@ -128,7 +128,7 @@ $response = $mpesa->reverse($transactionId, $amount, $receiverShortCode, $remark
 You can perform Business to Customer transactions:
 
 ```php
-$response = $mpesa->b2cTransaction($coversationId, $commandID, $msisdn, $amount, $remarks, $resultUrl, $timeoutUrl, $ocassion);
+$response = $mpesa->b2cTransaction($commandID, $msisdn, $amount, $remarks, $resultUrl, $timeoutUrl, $ocassion);
 ```
 
 - `$ocassion` is an optional field.

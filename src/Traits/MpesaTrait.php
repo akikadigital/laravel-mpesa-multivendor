@@ -41,8 +41,7 @@ trait MpesaTrait
             info('Token: ' . $token->access_token);
         }
 
-        $response = Http::withToken($token->access_token, 'Bearer')
-            ->contentType('application/json')
+        $response = Http::withToken($token->access_token)
             ->acceptJson()
             ->post($url, $body);
 
