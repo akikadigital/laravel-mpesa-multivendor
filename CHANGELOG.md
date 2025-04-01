@@ -65,3 +65,7 @@
 ## 0.1.6
 
 - Changes mpesa post function
+
+## 0.1.7
+
+- Updates post to legacy
