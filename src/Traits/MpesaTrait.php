@@ -21,17 +21,7 @@ trait MpesaTrait
         $response = Http::withBasicAuth($this->consumerKey, $this->consumerSecret)
             ->get($url);
 
-        if ($this->debugMode) {
-            info('Invoked URL: ' . $url);
-            info('Token: ' . $response->body());
-        }
-
-        $response = json_decode($response->body());
-        if ($this->debugMode) {
-            info('Token: ' . $response->access_token);
-        }
-
-        return $response->access_token;
+        return $response;
     }
 
     /**
@@ -40,17 +30,16 @@ trait MpesaTrait
 
     function makeRequest($url, $body)
     {
-        $headers = [
-            'Content-Type' => 'application/json',
-            'Authorization' => 'Bearer ' . $this->getToken(),
-        ];
-
+        // Convert the above code to use Http
+        $token = json_decode($this->getToken());
         if ($this->debugMode) {
             info('Invoked URL: ' . $url);
-            info('Headers: ' . json_encode($headers));
+            info('Request Body: ' . json_encode($body));
+            info('Token: ' . $token->access_token);
         }
 
-        $response = Http::withHeaders($headers)
+        $response = Http::withToken($token->access_token)
+            ->contentType('application/json')
             ->acceptJson()
             ->post($url, $body);
 

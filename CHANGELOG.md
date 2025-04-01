@@ -53,3 +53,11 @@
 ## 0.1.3
 
 - Updates generatePassword function
+
+## 0.1.4
+
+- Adds content type to Mpesa Post
+
+## 0.1.5
+
+- Updates content type to Mpesa Post
