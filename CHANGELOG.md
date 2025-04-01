@@ -61,3 +61,7 @@
 ## 0.1.5
 
 - Updates content type to Mpesa Post
+
+## 0.1.6
+
+- Changes mpesa post function

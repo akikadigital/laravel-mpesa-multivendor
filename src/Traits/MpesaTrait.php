@@ -5,6 +5,9 @@ namespace Akika\LaravelMpesaMultivendor\Traits;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 
 trait MpesaTrait
 {
@@ -31,19 +34,35 @@ trait MpesaTrait
     function makeRequest($url, $body)
     {
         // Convert the above code to use Http
+        // $token = json_decode($this->getToken());
+        // if ($this->debugMode) {
+        //     info('Invoked URL: ' . $url);
+        //     info('Request Body: ' . json_encode($body));
+        //     info('Token: ' . $token->access_token);
+        // }
+
+        // $response = Http::withToken($token->access_token)
+        //     ->contentType('application/json')
+        //     ->acceptJson()
+        //     ->post($url, $body);
+
+        // return $response;
+        
+        $client = new Client();
         $token = json_decode($this->getToken());
+        $headers = [
+            'Authorization' => 'Bearer ' . $token->access_token,
+            'Content-Type' => 'application/json',
+        ];
         if ($this->debugMode) {
             info('Invoked URL: ' . $url);
             info('Request Body: ' . json_encode($body));
             info('Token: ' . $token->access_token);
         }
+        $request = new Request('POST', $url, $headers, json_encode($body));
+        $res = $client->sendAsync($request)->wait();
+        return $res->getBody();
 
-        $response = Http::withToken($token->access_token)
-            ->contentType('application/json')
-            ->acceptJson()
-            ->post($url, $body);
-
-        return $response;
     }
 
     /**
