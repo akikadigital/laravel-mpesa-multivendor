@@ -77,3 +77,7 @@
 ## 0.1.9
 
 - Updates bug on b2cTransaction
+
+## 0.2.0
+
+- Fixes b2bBuyGoods bug

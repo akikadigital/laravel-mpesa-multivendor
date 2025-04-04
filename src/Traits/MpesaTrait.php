@@ -138,8 +138,12 @@ trait MpesaTrait
      *   Sanitize the phone number by getting rid of the leading 0 and replacing it with 254
      */
 
-    function sanitizePhoneNumber($phoneNumber)
+    function sanitizePhoneNumber($phoneNumber = null)
     {
+        if (!$phoneNumber) {
+            return "null";
+        }
+
         $phoneNumber = str_replace(" ", "", $phoneNumber); // remove spaces
         $phone_number = "254" . substr($phoneNumber, -9); // remove leading 0 and replace with 254
         return $phone_number;

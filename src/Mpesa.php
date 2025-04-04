@@ -325,7 +325,7 @@ class Mpesa
     {
         $url = $this->url . '/mpesa/b2c/v1/paymentrequest';
         $data = [
-            'InitiatorName'               =>  $this->apiUsername, // This is an API user created by the Business Administrator of the M-PESA
+            'InitiatorName'             =>  $this->apiUsername, // This is an API user created by the Business Administrator of the M-PESA
             'SecurityCredential'        =>  $this->securityCredential, // This is the value obtained after encrypting the API initiator password.
             'CommandID'                 =>  $commandID, // This is a unique command that specifies B2C transaction type.
             'Amount'                    =>  floor($amount), // remove decimal points
@@ -553,7 +553,7 @@ class Mpesa
             'SecurityCredential'        =>  $this->securityCredential,
             'CommandID'                 =>  'BusinessBuyGoods', // This specifies the type of transaction being performed. There are five allowed values on the API: BusinessPayBill, BusinessBuyGoods, DisburseFundsToBusiness, BusinessToBusinessTransfer or MerchantToMerchantTransfer.
             'SenderIdentifierType'      =>  $this->getIdentifierType("shortcode"),
-            'RecieverIdentifierType'    =>  $this->getIdentifierType("shortcode"),
+            'RecieverIdentifierType'    =>  $this->getIdentifierType("tillnumber"),
             'Amount'                    =>  floor($amount), // remove decimal points
             'PartyA'                    =>  $this->mpesaShortCode,
             'PartyB'                    =>  $destShortcode,
