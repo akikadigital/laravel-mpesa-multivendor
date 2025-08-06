@@ -81,3 +81,7 @@
 ## 0.2.0
 
 - Fixes b2bBuyGoods bug
+
+## 0.2.1
+
+- Includes support for Laravel 12
