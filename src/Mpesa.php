@@ -26,6 +26,14 @@ class Mpesa
 
     /**
      * Initialize the Mpesa class with the necessary credentials
+     * @param $mpesaShortCode - The M-Pesa short code
+     * @param $consumerKey - The consumer key
+     * @param $consumerSecret - The consumer secret
+     * @param $apiUsername - The API username
+     * @param $apiPassword - The API password
+     * @param $parentShortCode - The parent short code (optional)
+     * @param $passKey - The pass key (optional)
+     * @return void
      */
 
     public function __construct($mpesaShortCode, $consumerKey, $consumerSecret, $apiUsername, $apiPassword, $parentShortCode = null, $passKey = null)

@@ -85,3 +85,7 @@
 ## 0.2.1
 
 - Includes support for Laravel 12
+
+## 0.2.2
+
+- Updates stk push for parent-child relation
