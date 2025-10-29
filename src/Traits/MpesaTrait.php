@@ -112,9 +112,9 @@ trait MpesaTrait
 
     function generatePassword($timestamp)
     {
-        $password = base64_encode($this->parentShortCode ?? $this->mpesaShortCode . $this->passKey . $timestamp);
+        $password = base64_encode($this->parentShortCode . $this->passKey . $timestamp);
         if ($this->debugMode) {
-            info('Stamp: ' . $this->parentShortCode ?? $this->mpesaShortCode);
+            info('Stamp: ' . $this->parentShortCode);
             info('Passkey: ' . $this->passKey);
             info('Time: ' . $timestamp);
             info('Generated Password: ' . $password);

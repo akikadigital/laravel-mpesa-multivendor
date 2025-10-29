@@ -42,8 +42,8 @@ class Mpesa
         $this->debugMode = config('mpesa.debug');
         $this->url = config('mpesa.' . $this->environment . '.url');
 
-        $this->parentShortCode = $parentShortCode;
         $this->mpesaShortCode = $mpesaShortCode;
+        $this->parentShortCode = $parentShortCode ?? $this->mpesaShortCode;
         $this->consumerKey = $consumerKey;
         $this->consumerSecret = $consumerSecret;
         $this->passKey = $passKey;
@@ -199,7 +199,7 @@ class Mpesa
         $url = $this->url . '/mpesa/stkpush/v1/processrequest';
         $timestamp = date('YmdHis');
         $data = [
-            'BusinessShortCode'     => $this->parentShortCode ?? $this->mpesaShortCode,
+            'BusinessShortCode'     => $this->parentShortCode,
             'Password'              => $this->generatePassword($timestamp), // base64.encode(Shortcode+Passkey+Timestamp)
             'Timestamp'             => $timestamp,
             'TransactionType'       => 'CustomerPayBillOnline',
@@ -246,7 +246,7 @@ class Mpesa
 
         $timestamp = date('YmdHis');
         $data = [
-            'BusinessShortCode'     => $this->parentShortCode ?? $this->mpesaShortCode,
+            'BusinessShortCode'     => $this->parentShortCode,
             'Password'              => $this->generatePassword($timestamp),
             'Timestamp'             => $timestamp,
             'CheckoutRequestID'     => $checkoutRequestID // This is a global unique identifier of the processed checkout transaction request.

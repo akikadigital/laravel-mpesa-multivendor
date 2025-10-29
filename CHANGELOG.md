@@ -101,3 +101,7 @@
 ## 0.2.5
 
 - Updates timestamp on stk push
+
+## 0.2.6
+
+- Updates STK push password generator
