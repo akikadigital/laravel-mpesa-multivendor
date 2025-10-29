@@ -12,6 +12,7 @@ class Mpesa
     public $environment;
     public $url;
 
+    public $parentShortCode;
     public $mpesaShortCode;
     public $apiUsername;
     public $apiPassword;
@@ -27,12 +28,13 @@ class Mpesa
      * Initialize the Mpesa class with the necessary credentials
      */
 
-    public function __construct($mpesaShortCode, $consumerKey, $consumerSecret, $apiUsername, $apiPassword, $passKey = null)
+    public function __construct($mpesaShortCode, $consumerKey, $consumerSecret, $apiUsername, $apiPassword, $parentShortCode = null, $passKey = null)
     {
         $this->environment = config('mpesa.env');
         $this->debugMode = config('mpesa.debug');
         $this->url = config('mpesa.' . $this->environment . '.url');
 
+        $this->parentShortCode = $parentShortCode;
         $this->mpesaShortCode = $mpesaShortCode;
         $this->consumerKey = $consumerKey;
         $this->consumerSecret = $consumerSecret;
@@ -188,7 +190,7 @@ class Mpesa
     {
         $url = $this->url . '/mpesa/stkpush/v1/processrequest';
         $data = [
-            'BusinessShortCode'     => $this->mpesaShortCode,
+            'BusinessShortCode'     => $this->parentShortCode ?? $this->mpesaShortCode,
             'Password'              => $this->generatePassword(), // base64.encode(Shortcode+Passkey+Timestamp)
             'Timestamp'             => Carbon::rawParse('now')->format('YmdHis'),
             'TransactionType'       => 'CustomerPayBillOnline',
@@ -233,7 +235,7 @@ class Mpesa
     {
         $url = $this->url . '/mpesa/stkpushquery/v1/query';
         $data = [
-            'BusinessShortCode'     => $this->mpesaShortCode,
+            'BusinessShortCode'     => $this->parentShortCode ?? $this->mpesaShortCode,
             'Password'              => $this->generatePassword(),
             'Timestamp'             => Carbon::rawParse('now')->format('YmdHis'), // Date in format - YYYYMMDDHHmmss
             'CheckoutRequestID'     => $checkoutRequestID // This is a global unique identifier of the processed checkout transaction request.
