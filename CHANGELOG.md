@@ -100,4 +100,4 @@
 
 ## 0.2.5
 
-- Updates timestamp on sk push
+- Updates timestamp on stk push
