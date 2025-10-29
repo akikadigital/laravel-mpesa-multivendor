@@ -97,3 +97,7 @@
 ## 0.2.4
 
 - Updates stk push account reference requirement
+
+## 0.2.5
+
+- Updates timestamp on sk push
