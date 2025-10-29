@@ -186,15 +186,15 @@ class Mpesa
      * It is used to simulate the process of a customer paying for goods or services.
      * The transaction moves money from the customer’s account to the business account.
      * The customer will receive a propmt to enter their M-Pesa pin to complete the transaction.
-     * @param $amount - The amount to be paid
+     * @param $accountReference - The account number to be credited e.g. Invoice Number, Account Number
      * @param $phoneNumber - The phone number making the payment
+     * @param $amount - The amount to be paid
+     * @param $callbackUrl - The endpoint that receives the response of the transaction
      * @param $transactionDesc - A description of the transaction
-     * @param $accountNumber - The account number to be credited
-     * 
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function stkPush($accountNumber, $phoneNumber, $amount, $callbackUrl, $transactionDesc = null)
+    public function stkPush($accountReference, $phoneNumber, $amount, $callbackUrl, $transactionDesc = null)
     {
         $url = $this->url . '/mpesa/stkpush/v1/processrequest';
         $data = [
@@ -206,7 +206,7 @@ class Mpesa
             'PartyA'                => $this->sanitizePhoneNumber($phoneNumber),
             'PartyB'                => $this->mpesaShortCode,
             'PhoneNumber'           => $this->sanitizePhoneNumber($phoneNumber),
-            'AccountReference'      => $accountNumber, //Account Number for a paybill..Maximum of 12 Characters.,
+            'AccountReference'      => $accountReference, //Account Number for a paybill..Maximum of 12 Characters.,
             'TransactionDesc'       => $transactionDesc ? substr($transactionDesc, 0, 13) : 'STK Push', // Should not exceed 13 characters
             'CallBackURL'           => $callbackUrl,
         ];

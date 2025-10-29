@@ -93,3 +93,7 @@
 ## 0.2.3
 
 - Updates password generation for stk push with parent-child relation
+
+## 0.2.4
+
+- Updates stk push account reference requirement
