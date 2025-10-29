@@ -89,3 +89,7 @@
 ## 0.2.2
 
 - Updates stk push for parent-child relation
+
+## 0.2.3
+
+- Updates password generation for stk push with parent-child relation

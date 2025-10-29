@@ -113,7 +113,13 @@ trait MpesaTrait
     function generatePassword()
     {
         $timestamp = Carbon::now()->format('YmdHis');
-        $password = base64_encode($this->mpesaShortCode . $this->passKey . $timestamp);
+        $password = base64_encode($this->parentShortCode ?? $this->mpesaShortCode . $this->passKey . $timestamp);
+        if ($this->debugMode) {
+            info('Stamp: ' . $this->parentShortCode ?? $this->mpesaShortCode);
+            info('Passkey: ' . $this->passKey);
+            info('Time: ' . $timestamp);
+            info('Generated Password: ' . $password);
+        }
 
         return $password;
     }
