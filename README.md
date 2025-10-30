@@ -68,6 +68,14 @@ You can fetch the token required for Mpesa API calls as follows:
 $token = $mpesa->getToken();
 ```
 
+### Reusing already acquired access token
+
+In case you running many mpesa calls in an hour, you do not need to generate new access token every time. Instead, you can save the token and set it on subsequet calls until it expires. Use the function below to set the token:
+
+```php
+$mpesa->setAccessToken($accessToken);
+```
+
 ### Getting Account Balance
 
 You can fetch mpesa account balance as follows:

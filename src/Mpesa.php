@@ -22,6 +22,8 @@ class Mpesa
     public $consumerKey;
     public $consumerSecret;
 
+    public $accessToken;
+
     public $debugMode;
 
     /**
@@ -56,6 +58,11 @@ class Mpesa
             info('Environment: ' . $this->environment);
             info('URL: ' . $this->url);
         }
+    }
+
+    public function setAccessToken($accessToken)
+    {
+        $this->accessToken = $accessToken;
     }
 
     // --------------------------------- Account Balance ---------------------------------

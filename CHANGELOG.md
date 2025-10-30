@@ -105,3 +105,7 @@
 ## 0.2.6
 
 - Updates STK push password generator
+
+## 0.2.7
+
+- Adds setAccessToken() function to allow reusing of access tokens

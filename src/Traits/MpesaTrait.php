@@ -27,21 +27,38 @@ trait MpesaTrait
         return $response;
     }
 
+    function getAccessToken()
+    {
+        $token = null;
+        if ($this->accessToken) {
+            $token = $this->accessToken;
+        } else {
+            $token = json_decode($this->getToken());
+            if ($this->debugMode) {
+                info('Token: ' . $token->access_token);
+            }
+            $token = $token->access_token;
+        }
+
+        return $token;
+    }
+
     /**
      *   Make a request to the Mpesa API
      */
 
     function makeRequest($url, $body)
     {
+        // $this->accessToken
         // Convert the above code to use Http
         $token = json_decode($this->getToken());
         if ($this->debugMode) {
             info('Invoked URL: ' . $url);
             info('Request Body: ' . json_encode($body));
-            info('Token: ' . $token->access_token);
+            info('Token: ' . $this->getAccessToken());
         }
 
-        $response = Http::withToken($token->access_token)
+        $response = Http::withToken($this->getAccessToken())
             ->acceptJson()
             ->post($url, $body);
 
