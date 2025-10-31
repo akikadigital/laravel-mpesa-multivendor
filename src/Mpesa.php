@@ -12,7 +12,6 @@ class Mpesa
     public $environment;
     public $url;
 
-    public $parentShortCode;
     public $mpesaShortCode;
     public $apiUsername;
     public $apiPassword;
@@ -33,19 +32,17 @@ class Mpesa
      * @param $consumerSecret - The consumer secret
      * @param $apiUsername - The API username
      * @param $apiPassword - The API password
-     * @param $parentShortCode - The parent short code (optional)
      * @param $passKey - The pass key (optional)
      * @return void
      */
 
-    public function __construct($mpesaShortCode, $consumerKey, $consumerSecret, $apiUsername, $apiPassword, $parentShortCode = null, $passKey = null)
+    public function __construct($mpesaShortCode, $consumerKey, $consumerSecret, $apiUsername, $apiPassword, $passKey = null)
     {
         $this->environment = config('mpesa.env');
         $this->debugMode = config('mpesa.debug');
         $this->url = config('mpesa.' . $this->environment . '.url');
 
         $this->mpesaShortCode = $mpesaShortCode;
-        $this->parentShortCode = $parentShortCode ?? $this->mpesaShortCode;
         $this->consumerKey = $consumerKey;
         $this->consumerSecret = $consumerSecret;
         $this->passKey = $passKey;
@@ -206,7 +203,7 @@ class Mpesa
         $url = $this->url . '/mpesa/stkpush/v1/processrequest';
         $timestamp = date('YmdHis');
         $data = [
-            'BusinessShortCode'     => $this->parentShortCode,
+            'BusinessShortCode'     => $this->mpesaShortCode,
             'Password'              => $this->generatePassword($timestamp), // base64.encode(Shortcode+Passkey+Timestamp)
             'Timestamp'             => $timestamp,
             'TransactionType'       => 'CustomerPayBillOnline',
@@ -253,7 +250,7 @@ class Mpesa
 
         $timestamp = date('YmdHis');
         $data = [
-            'BusinessShortCode'     => $this->parentShortCode,
+            'BusinessShortCode'     => $this->mpesaShortCode,
             'Password'              => $this->generatePassword($timestamp),
             'Timestamp'             => $timestamp,
             'CheckoutRequestID'     => $checkoutRequestID // This is a global unique identifier of the processed checkout transaction request.

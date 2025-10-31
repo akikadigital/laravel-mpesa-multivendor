@@ -49,9 +49,6 @@ trait MpesaTrait
 
     function makeRequest($url, $body)
     {
-        // $this->accessToken
-        // Convert the above code to use Http
-        $token = json_decode($this->getToken());
         if ($this->debugMode) {
             info('Invoked URL: ' . $url);
             info('Request Body: ' . json_encode($body));
@@ -129,9 +126,9 @@ trait MpesaTrait
 
     function generatePassword($timestamp)
     {
-        $password = base64_encode($this->parentShortCode . $this->passKey . $timestamp);
+        $password = base64_encode($this->mpesaShortCode . $this->passKey . $timestamp);
         if ($this->debugMode) {
-            info('Stamp: ' . $this->parentShortCode);
+            info('Stamp: ' . $this->mpesaShortCode);
             info('Passkey: ' . $this->passKey);
             info('Time: ' . $timestamp);
             info('Generated Password: ' . $password);

@@ -109,3 +109,7 @@
 ## 0.2.7
 
 - Adds setAccessToken() function to allow reusing of access tokens
+
+## 0.2.8
+
+- Updates mpesa package for parent-child relations
