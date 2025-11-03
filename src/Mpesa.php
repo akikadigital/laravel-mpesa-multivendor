@@ -207,7 +207,7 @@ class Mpesa
             'BusinessShortCode'     => $this->mpesaShortCode,
             'Password'              => $this->generatePassword($timestamp), // base64.encode(Shortcode+Passkey+Timestamp)
             'Timestamp'             => $timestamp,
-            'TransactionType'       => 'CustomerPayBillOnline',
+            'TransactionType'       => 'CustomerBuyGoodsOnline',
             'Amount'                => floor($amount), // remove decimal points
             'PartyA'                => $this->sanitizePhoneNumber($phoneNumber),
             'PartyB'                => $receivingShortCode != null ? $receivingShortCode : $this->mpesaShortCode,

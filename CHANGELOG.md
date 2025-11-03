@@ -117,3 +117,7 @@
 ## 0.2.9
 
 - Updates STK push to allow definition of receiving shortcode
+
+## 0.3.0
+
+- Updates stk push values
