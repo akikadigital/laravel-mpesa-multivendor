@@ -113,3 +113,7 @@
 ## 0.2.8
 
 - Updates mpesa package for parent-child relations
+
+## 0.2.9
+
+- Updates STK push to allow definition of receiving shortcode

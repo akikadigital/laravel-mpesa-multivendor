@@ -109,9 +109,10 @@ $response = $mpesa->c2bSimulate($amount, $phoneNumber, $billRefNumber, $commandI
 You can initiate online payment on behalf of a customer:
 
 ```php
-$response = $mpesa->stkPush($accountNumber, $phoneNumber, $amount, $callbackUrl, $transactionDesc);
+$response = $mpesa->stkPush($accountReference, $phoneNumber, $amount, $callbackUrl, $receivingShortCode = null, $transactionDesc = null);
 ```
 
+- `$receivingShortCode` to be provided if the receiving shortcode is different from the one provided during initialization.
 - `$transactionDesc` can be null
 
 #### Querying STK Push Status

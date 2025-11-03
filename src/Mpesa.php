@@ -194,11 +194,12 @@ class Mpesa
      * @param $phoneNumber - The phone number making the payment
      * @param $amount - The amount to be paid
      * @param $callbackUrl - The endpoint that receives the response of the transaction
+     * @param $receivingShortCode - The shortcode of the business receiving the payment (optional)
      * @param $transactionDesc - A description of the transaction
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function stkPush($accountReference, $phoneNumber, $amount, $callbackUrl, $transactionDesc = null)
+    public function stkPush($accountReference, $phoneNumber, $amount, $callbackUrl, $receivingShortCode = null, $transactionDesc = null)
     {
         $url = $this->url . '/mpesa/stkpush/v1/processrequest';
         $timestamp = date('YmdHis');
@@ -209,7 +210,7 @@ class Mpesa
             'TransactionType'       => 'CustomerPayBillOnline',
             'Amount'                => floor($amount), // remove decimal points
             'PartyA'                => $this->sanitizePhoneNumber($phoneNumber),
-            'PartyB'                => $this->mpesaShortCode,
+            'PartyB'                => $receivingShortCode != null ? $receivingShortCode : $this->mpesaShortCode,
             'PhoneNumber'           => $this->sanitizePhoneNumber($phoneNumber),
             'AccountReference'      => $accountReference, //Account Number for a paybill..Maximum of 12 Characters.,
             'TransactionDesc'       => $transactionDesc ? substr($transactionDesc, 0, 13) : 'STK Push', // Should not exceed 13 characters
