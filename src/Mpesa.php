@@ -9,21 +9,21 @@ class Mpesa
 {
     use MpesaTrait;
 
-    public $environment;
-    public $url;
+    public string $environment;
+    public string $url;
 
-    public $mpesaShortCode;
-    public $apiUsername;
-    public $apiPassword;
-    public $securityCredential;
+    public string $mpesaShortCode;
+    public string $apiUsername;
+    public string $apiPassword;
+    public string $securityCredential;
 
-    public $passKey;
-    public $consumerKey;
-    public $consumerSecret;
+    public ?string $passKey;
+    public string $consumerKey;
+    public string $consumerSecret;
 
-    public $accessToken;
+    protected ?string $accessToken = null;
 
-    public $debugMode;
+    public bool $debugMode;
 
     /**
      * Initialize the Mpesa class with the necessary credentials
@@ -36,7 +36,7 @@ class Mpesa
      * @return void
      */
 
-    public function __construct($mpesaShortCode, $consumerKey, $consumerSecret, $apiUsername, $apiPassword, $passKey = null)
+    public function __construct(string $mpesaShortCode, string $consumerKey, string $consumerSecret, string $apiUsername, string $apiPassword, ?string $passKey = null)
     {
         $this->environment = config('mpesa.env');
         $this->debugMode = config('mpesa.debug');
@@ -57,7 +57,7 @@ class Mpesa
         }
     }
 
-    public function setAccessToken($accessToken)
+    public function setAccessToken(string $accessToken): void
     {
         $this->accessToken = $accessToken;
     }
@@ -69,7 +69,7 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function getBalance($resultUrl, $timeoutUrl)
+    public function getBalance($resultUrl, $timeoutUrl): ?object
     {
         $url = $this->url . '/mpesa/accountbalance/v1/query';
         $data = [
@@ -113,7 +113,7 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function c2bRegisterUrl($confirmationUrl, $validationUrl)
+    public function c2bRegisterUrl($confirmationUrl, $validationUrl): ?object
     {
         $url = $this->url . '/mpesa/c2b/v2/registerurl';
 
@@ -161,7 +161,7 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function c2bSimulate($amount, $phoneNumber, $billRefNumber, $commandID = 'CustomerPayBillOnline')
+    public function c2bSimulate($amount, $phoneNumber, $billRefNumber, $commandID = 'CustomerPayBillOnline'): ?object
     {
         $url = $this->url . '/mpesa/c2b/v1/simulate';
         $data = [
@@ -199,7 +199,7 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function stkPush($accountReference, $phoneNumber, $amount, $callbackUrl, $receivingShortCode = null, $transactionDesc = null)
+    public function stkPush($accountReference, $phoneNumber, $amount, $callbackUrl, $receivingShortCode = null, $transactionDesc = null): ?object
     {
         $url = $this->url . '/mpesa/stkpush/v1/processrequest';
         $timestamp = date('YmdHis');
@@ -245,7 +245,7 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function stkPushStatus($checkoutRequestID)
+    public function stkPushStatus($checkoutRequestID): ?object
     {
         $url = $this->url . '/mpesa/stkpushquery/v1/query';
 
@@ -280,7 +280,7 @@ class Mpesa
      * 
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
-    public function reverse($transactionId, $amount, $receiverShortCode, $remarks, $resultUrl, $timeoutUrl, $ocassion = null)
+    public function reverse($transactionId, $amount, $receiverShortCode, $remarks, $resultUrl, $timeoutUrl, $ocassion = null): ?object
     {
         $url = $this->url . '/mpesa/reversal/v1/request';
         $data = [
@@ -339,7 +339,7 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function b2cTransaction($commandID, $msisdn, $amount, $remarks, $resultUrl, $timeoutUrl, $ocassion = null)
+    public function b2cTransaction($commandID, $msisdn, $amount, $remarks, $resultUrl, $timeoutUrl, $ocassion = null): ?object
     {
         $url = $this->url . '/mpesa/b2c/v1/paymentrequest';
         $data = [
@@ -392,7 +392,7 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function b2cTopup($accountReference, $receiverShortCode, $amount, $resultUrl, $timeoutUrl, $remarks)
+    public function b2cTopup($accountReference, $receiverShortCode, $amount, $resultUrl, $timeoutUrl, $remarks): ?object
     {
         $url = $this->url . '/mpesa/b2b/v1/paymentrequest';
         $data = [
@@ -448,7 +448,7 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function validatedB2CTransaction($commandID, $msisdn, $amount, $remarks, $idNumber, $resultUrl, $timeoutUrl, $ocassion = null)
+    public function validatedB2CTransaction($commandID, $msisdn, $amount, $remarks, $idNumber, $resultUrl, $timeoutUrl, $ocassion = null): ?object
     {
         $url = $this->url . '/mpesa/b2c/v1/paymentrequest';
         $data = [
@@ -505,7 +505,7 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function b2bPaybill($destShortcode, $amount, $remarks, $accountNumber, $resultUrl, $timeoutUrl, $requester = null)
+    public function b2bPaybill($destShortcode, $amount, $remarks, $accountNumber, $resultUrl, $timeoutUrl, $requester = null): ?object
     {
         //DisburseFundsToBusiness
         $url = $this->url . '/mpesa/b2b/v1/paymentrequest';
@@ -562,7 +562,7 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function b2bBuyGoods($destShortcode, $amount, $remarks, $accountNumber, $resultUrl, $timeoutUrl, $requester = null)
+    public function b2bBuyGoods($destShortcode, $amount, $remarks, $accountNumber, $resultUrl, $timeoutUrl, $requester = null): ?object
     {
         //DisburseFundsToBusiness
         $url = $this->url . '/mpesa/b2b/v1/paymentrequest';
@@ -620,7 +620,7 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function b2bExpressCheckout($destShortcode, $partnerName, $amount, $paymentReference, $callbackUrl, $requestRefID)
+    public function b2bExpressCheckout($destShortcode, $partnerName, $amount, $paymentReference, $callbackUrl, $requestRefID): ?object
     {
         $url = $this->url . '/v1/ussdpush/get-msisdn';
         $data = [
@@ -667,7 +667,7 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function getTransactionStatus($transactionId, $identifierType, $remarks, $resultUrl, $timeoutUrl, $originalConversationId)
+    public function getTransactionStatus($transactionId, $identifierType, $remarks, $resultUrl, $timeoutUrl, $originalConversationId): ?object
     {
         $url = $this->url . '/mpesa/transactionstatus/v1/query';
         $data = [
@@ -730,7 +730,7 @@ class Mpesa
      * 
      */
 
-    public function dynamicQR($merchantName, $refNo, $trxCode, $cpi, $size, $amount = null)
+    public function dynamicQR($merchantName, $refNo, $trxCode, $cpi, $size, $amount = null): ?object
     {
         $url = $this->url . '/mpesa/qrcode/v1/generate';
         $data = [
@@ -766,7 +766,7 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function billManagerOptin($email, $phoneNumber, $sendReminders, $logoUrl, $callbackUrl)
+    public function billManagerOptin($email, $phoneNumber, $sendReminders, $logoUrl, $callbackUrl): ?object
     {
         $url = $this->url . "/v1/billmanager-invoice/optin";
         $data = [
@@ -817,7 +817,7 @@ class Mpesa
      * 
      */
 
-    public function sendInvoice($reference, $billedTo, $phoneNumber, $billingPeriod, $invoiceName, $dueDate, $amount, $items)
+    public function sendInvoice($reference, $billedTo, $phoneNumber, $billingPeriod, $invoiceName, $dueDate, $amount, $items): ?object
     {
         $url = $this->url . "/v1/billmanager-invoice/single-invoicing";
         $data = [
@@ -858,7 +858,7 @@ class Mpesa
      * 
      */
 
-    public function taxRemittance($amount, $receiverShortCode, $accountReference, $remarks, $resultUrl, $timeoutUrl)
+    public function taxRemittance($amount, $receiverShortCode, $accountReference, $remarks, $resultUrl, $timeoutUrl): ?object
     {
         $url = $this->url . '/mpesa/b2b/v1/remittax';
         $data = [
@@ -919,7 +919,7 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function ratiba($name, $startDate, $endDate, $transactionType, $amount, $phoneNumber, $callbackUrl, $accountReference, $transactionDesc, $frequency)
+    public function ratiba($name, $startDate, $endDate, $transactionType, $amount, $phoneNumber, $callbackUrl, $accountReference, $transactionDesc, $frequency): ?object
     {
         $url = $this->url . '/standingorder/v1/createStandingOrderExternal';
         $data = [
@@ -967,7 +967,7 @@ class Mpesa
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
 
-    public function mpesaTransactionsHistory($startDate, $endDate, $offset = 0)
+    public function mpesaTransactionsHistory($startDate, $endDate, $offset = 0): ?object
     {
         $url = $this->url . '/pulltransactions/v1/query';
         $data = [

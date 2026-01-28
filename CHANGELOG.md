@@ -121,3 +121,7 @@
 ## 0.3.0
 
 - Updates stk push values
+
+## 0.3.1
+
+- Updates strict typing

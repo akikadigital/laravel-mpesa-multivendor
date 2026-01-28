@@ -18,79 +18,87 @@ trait MpesaTrait
      *   If it does not exist or is expired, generate a new token and save it to the database
      */
 
-    function getToken()
+    function getToken(): string
     {
         $url = $this->url . '/oauth/v1/generate?grant_type=client_credentials';
+
         $response = Http::withBasicAuth($this->consumerKey, $this->consumerSecret)
             ->get($url);
 
-        return $response;
-    }
-
-    function getAccessToken()
-    {
-        $token = null;
-        if ($this->accessToken) {
-            $token = $this->accessToken;
-        } else {
-            $token = json_decode($this->getToken());
-            if ($this->debugMode) {
-                info('Token: ' . $token->access_token);
-            }
-            $token = $token->access_token;
+        if (! $response->successful()) {
+            throw new \RuntimeException(
+                'Failed to fetch M-Pesa access token: ' . $response->body()
+            );
         }
 
-        return $token;
+        return $response->json('access_token');
+    }
+
+    function getAccessToken(): string
+    {
+        if ($this->accessToken) {
+            return $this->accessToken;
+        }
+
+        $this->accessToken = $this->getToken();
+
+        if ($this->debugMode) {
+            info('Mpesa access token generated');
+        }
+
+        return $this->accessToken;
     }
 
     /**
      *   Make a request to the Mpesa API
      */
 
-    function makeRequest($url, $body)
+    function makeRequest($url, $body): ?object
     {
         if ($this->debugMode) {
             info('Invoked URL: ' . $url);
             info('Request Body: ' . json_encode($body));
-            info('Token: ' . $this->getAccessToken());
+            info('Mpesa access token retrieved');
         }
 
         $response = Http::withToken($this->getAccessToken())
             ->acceptJson()
             ->post($url, $body);
 
-        return $response;
+        if (! $response->successful()) {
+            logger()->error('Daraja HTTP request failed', [
+                'url'    => $url,
+                'status' => $response->status(),
+                'body'   => $response->body(),
+            ]);
+
+            return null; // or throw
+        }
+
+        // 🔑 Laravel 12: explicitly extract payload
+        return $response->object();
     }
 
     /**
      *   Get the identifier type given the type
      */
 
-    function getIdentifierType($type)
+    function getIdentifierType(string $type): int
     {
-        $type = strtolower($type);
-        switch ($type) {
-            case "msisdn":
-                $x = 1;
-                break;
-            case "tillnumber":
-                $x = 2;
-                break;
-            case "shortcode":
-                $x = 4;
-                break;
-            case "paybill":
-                $x = 4;
-                break;
-        }
-        return $x;
+        return match (strtolower($type)) {
+            'msisdn'     => 1,
+            'tillnumber' => 2,
+            'shortcode',
+            'paybill'    => 4,
+            default      => throw new \InvalidArgumentException("Invalid identifier type [$type]"),
+        };
     }
 
     /**
      *   Get the transaction type given the type
      */
 
-    function ratibaTransactionType($type)
+    function ratibaTransactionType($type): string
     {
         $types = [
             'paybill' => 'Standing Order Customer Pay Bill',
@@ -104,7 +112,7 @@ trait MpesaTrait
      *   Get the frequency given the frequency
      */
 
-    function ratibaFrequency($frequency)
+    function ratibaFrequency(string $frequency): int
     {
         $frequencies = [
             'one-off' => 1,
@@ -117,6 +125,10 @@ trait MpesaTrait
             'yearly' => 8,
         ];
 
+        if (! isset($frequencies[$frequency])) {
+            throw new \InvalidArgumentException("Invalid frequency [$frequency]");
+        }
+
         return $frequencies[$frequency];
     }
 
@@ -124,7 +136,7 @@ trait MpesaTrait
      *   Generate the password for the STK push
      */
 
-    function generatePassword($timestamp)
+    function generatePassword($timestamp): string
     {
         $password = base64_encode($this->mpesaShortCode . $this->passKey . $timestamp);
         if ($this->debugMode) {
@@ -141,7 +153,7 @@ trait MpesaTrait
      *   Generate the certificate for the API
      */
 
-    function generateCertificate()
+    function generateCertificate(): string
     {
         if (config('mpesa.env') == 'sandbox') {
             $publicKey = File::get(__DIR__ . '/../../certificates/SandboxCertificate.cer');
@@ -157,10 +169,10 @@ trait MpesaTrait
      *   Sanitize the phone number by getting rid of the leading 0 and replacing it with 254
      */
 
-    function sanitizePhoneNumber($phoneNumber = null)
+    function sanitizePhoneNumber($phoneNumber): ?string
     {
         if (!$phoneNumber) {
-            return "null";
+            return null;
         }
 
         $phoneNumber = str_replace(" ", "", $phoneNumber); // remove spaces
@@ -172,14 +184,14 @@ trait MpesaTrait
      *   Check if the URL is valid
      */
 
-    function isValidUrl($url)
+    function isValidUrl(string $url): bool
     {
-        // check if $url is a valid url and has not include keywords like mpesa,safaricom etc
-        if (filter_var($url, FILTER_VALIDATE_URL)) {
-            if (strpos($url, 'mpesa') !== false || strpos($url, 'safaricom') !== false || strpos($url, 'daraja') !== false) {
-                return false;
-            }
-            return true;
+        if (! filter_var($url, FILTER_VALIDATE_URL)) {
+            return false;
         }
+
+        return ! str_contains($url, 'mpesa')
+            && ! str_contains($url, 'safaricom')
+            && ! str_contains($url, 'daraja');
     }
 }
