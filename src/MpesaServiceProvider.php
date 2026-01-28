@@ -14,7 +14,7 @@ class MpesaServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind('mpesa', function () {
-            return new Mpesa();
+            return new Mpesa("", "", "", "", "", "");
         });
     }
 

@@ -2,12 +2,8 @@
 
 namespace Akika\LaravelMpesaMultivendor\Traits;
 
-use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
 
 trait MpesaTrait
 {
