@@ -133,3 +133,7 @@
 ## 0.3.3
 
 - Performs cleanup on mpesa request
+
+## 0.3.4
+
+- Updates return type for functions from ?object to ?string 
