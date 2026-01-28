@@ -49,17 +49,20 @@ trait MpesaTrait
      *   Make a request to the Mpesa API
      */
 
-    function makeRequest($url, $body): ?object
+    function makeRequest(string $url, array $body): ?string
     {
         if ($this->debugMode) {
             info('Invoked URL: ' . $url);
-            info('Request Body: ' . json_encode($body));
+            info('Request Body', $body);
             info('Mpesa access token retrieved');
         }
 
         $response = Http::withToken($this->getAccessToken())
-            ->acceptJson()
-            ->post($url, $body);
+            ->withHeaders([
+                'Content-Type' => 'application/json',
+                'Accept'       => 'application/json',
+            ])
+            ->post($url, $body); // Laravel automatically JSON-encodes arrays
 
         if (! $response->successful()) {
             logger()->error('Daraja HTTP request failed', [
@@ -71,8 +74,7 @@ trait MpesaTrait
             return null; // or throw
         }
 
-        // 🔑 Laravel 12: explicitly extract payload
-        return $response->object();
+        return $response->body(); // string (JSON)
     }
 
     /**

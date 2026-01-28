@@ -129,3 +129,7 @@
 ## 0.3.2
 
 - Updates mpesa trait
+
+## 0.3.3
+
+- Performs cleanup on mpesa request
