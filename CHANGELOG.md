@@ -125,3 +125,7 @@
 ## 0.3.1
 
 - Updates strict typing
+
+## 0.3.2
+
+- Updates mpesa trait
