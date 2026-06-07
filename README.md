@@ -44,6 +44,7 @@ Mpesa::using($credentials)->transactionHistory();
 Mpesa::using($credentials)->transactionStatus();
 Mpesa::using($credentials)->pochi();
 Mpesa::using($credentials)->org();
+Mpesa::using($credentials)->imsi();
 Mpesa::using($credentials)->reversal();
 ```
 
@@ -285,7 +286,7 @@ $response = Mpesa::using($credentials)
         destShortcode: $destShortcode,
         amount: $amount,
         paymentReference: $paymentReference, // The reference for the payment
-        callbackUrl: $callbackUrl 
+        callbackUrl: $callbackUrl
         requestRefID: $requestRefID
     );
 ```
@@ -353,7 +354,7 @@ $response = Mpesa::using($credentials)
     ->remit(
         amount: $amount,
         accountReference: $accountReference, // The payment registration number (PRN) issued by KRA.
-        resultUrl: $resultUrl, 
+        resultUrl: $resultUrl,
         queueTimeoutUrl: $queueTimeoutUrl, // Optional remarks for the transaction (default: 'Tax remittance').
         remarks: $remarks,
         commandId: $commandId, // The due date for the invoice (in 'Y-m-d' format).
@@ -373,7 +374,7 @@ $response = Mpesa::using($credentials)
     ->createStandingOrder(
         name: $name,
         startDate: $startDate,
-        endDate: $endDate, 
+        endDate: $endDate,
         transactionType: $transactionType,
         amount: $amount,
         phoneNumber: $phoneNumber,
@@ -431,6 +432,20 @@ $response = Mpesa::using($credentials)
         startDate: $startDate,
         endDate: $endDate,
         offset: $offset,
+    );
+```
+
+### IMSI
+
+Get the IMSI number for a given phone number.
+
+_NOTE: This API is charged per request, so use it only when necessary (e.g., for fraud prevention or network analysis)._
+
+```php
+$response = Mpesa::using($credentials)
+    ->imsi()
+    ->query(
+        phoneNumber: $phoneNumber
     );
 ```
 

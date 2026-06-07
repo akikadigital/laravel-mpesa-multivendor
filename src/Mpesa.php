@@ -10,6 +10,7 @@ use Akika\LaravelMpesaMultivendor\Services\AccountBalanceService;
 use Akika\LaravelMpesaMultivendor\Services\BillManagerService;
 use Akika\LaravelMpesaMultivendor\Services\BongaService;
 use Akika\LaravelMpesaMultivendor\Services\DynamicQrService;
+use Akika\LaravelMpesaMultivendor\Services\ImsiService;
 use Akika\LaravelMpesaMultivendor\Services\OrganizationServce;
 use Akika\LaravelMpesaMultivendor\Services\PochiService;
 use Akika\LaravelMpesaMultivendor\Services\RatibaService;
@@ -115,6 +116,11 @@ class Mpesa
     public function bonga(): BongaService
     {
         return new BongaService($this->client);
+    }
+
+    public function imsi(): ImsiService
+    {
+        return new ImsiService($this->client);
     }
 
     public function org(): OrganizationServce

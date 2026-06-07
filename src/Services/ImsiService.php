@@ -15,7 +15,7 @@ class ImsiService
      * @param string $phoneNumber The phone number to query (in international format, e.g., 2547XXXXXXXX).
      * @return array The response from the API containing the IMSI number.
      */
-    public function getImsi(string $phoneNumber): array
+    public function query(string $phoneNumber): array
     {
         $url = $this->client->baseUrl() . '/imsi/v1/checkATI';
 
