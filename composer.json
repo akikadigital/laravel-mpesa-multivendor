@@ -1,22 +1,23 @@
 {
     "name": "akika/laravel-mpesa-multivendor",
-    "description": "A multi-tenant Laravel package for integrating Mpesa Daraja API. The package supports Laravel version 5 and above. It allows seamless Mpesa transactions for multiple vendors",
+    "description": "A multivendor Laravel package for integrating Safaricom M-Pesa Daraja APIs.. The package supports Laravel version 5 and above. It allows seamless Mpesa transactions for multiple vendors",
     "homepage": "https://github.com/akikadigital/laravel-mpesa-multivendor",
     "type": "library",
     "keywords": [
         "mpesa",
+        "m-pesa",
         "daraja",
+        "safaricom",
         "laravel",
         "payment",
-        "Akika",
-        "Digital"
+        "multivendor",
+        "multi-tenant"
     ],
     "minimum-stability": "dev",
     "require": {
         "php": "^8.0",
         "illuminate/support": "^8.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0",
 		"illuminate/http":"^8.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0",
-		"guzzlehttp/guzzle": "^7.5"
     },
     "license": "MIT",
     "autoload": {
