@@ -137,3 +137,35 @@
 ## 0.3.4
 
 - Updates return type for functions from ?object to ?string 
+
+## 0.4.0
+
+### Added
+- Added MpesaClient to centralize: Access token generation, Token caching, HTTP request handling, Security credential generation and Helper methods
+- Added MpesaCredentials value object for managing vendor credentials.
+- Added HandlesMpesaHelpers trait for reusable utility methods.
+- Added service-based architecture:
+
+
+### Changed 
+- Refactored monolithic Mpesa class into smaller service classes.
+- Moved token management from database storage to Laravel cache.
+- Implemented automatic access token retrieval and refresh.
+- Updated all API responses to return decoded JSON arrays.
+- Replaced facade binding with singleton registration.
+- Added configuration merging using mergeConfigFrom().
+- Renamed publish tag from config to mpesa-config.
+- Improved URL validation logic.
+- Improved phone number sanitization and validation.
+- Added strict type declarations across services and helpers.
+- Implemented lazy loading of security credentials.
+
+### Security
+- Removed logging of sensitive credentials.
+- Masked or eliminated passkey exposure in debug logs.
+
+### Architecture
+- Introduced multivendor-friendly credential management.
+- Separated business logic from transport and authentication logic.
+- Reduced Mpesa class responsibility to a service entry point.
+- Improved package maintainability and extensibility for future Daraja APIs.
