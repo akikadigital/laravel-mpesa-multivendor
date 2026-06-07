@@ -47,6 +47,19 @@ Mpesa::using($credentials)->org();
 Mpesa::using($credentials)->reversal();
 ```
 
+Credentials consists of the following array. The details are shortcode based to support multivendor.
+
+```php
+$credentials = [
+    'shortcode' => '600000',
+    'consumer_key' => 'xxx',
+    'consumer_secret' => 'xxx',
+    'api_username' => 'testapi',
+    'api_password' => 'xxx',
+    'passkey' => 'xxx',
+];
+```
+
 ## Details of the config file
 
 ```php
@@ -108,16 +121,6 @@ $mpesa = Mpesa::default();
 
 ```php
 use Akika\Mpesa\Facades\Mpesa;
-
-// Update the credentials with shortcode based details
-$credentials = [
-    'shortcode' => '600000',
-    'consumer_key' => 'xxx',
-    'consumer_secret' => 'xxx',
-    'api_username' => 'testapi',
-    'api_password' => 'xxx',
-    'passkey' => 'xxx',
-];
 
 $mpesa = Mpesa::using($credentials);
 ```
