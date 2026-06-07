@@ -15,12 +15,12 @@ class MpesaCredentials
      * @param string|null $passkey
      */
     public function __construct(
-        public readonly string $shortcode,
-        public readonly string $consumerKey,
-        public readonly string $consumerSecret,
-        public readonly string $apiUsername = '',
-        public readonly string $apiPassword = '',
-        public readonly ?string $passkey = null,
+        public string $shortcode,
+        public string $consumerKey,
+        public string $consumerSecret,
+        public string $apiUsername = '',
+        public string $apiPassword = '',
+        public ?string $passkey = null,
     ) {}
 
     /**
