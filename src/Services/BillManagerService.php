@@ -11,7 +11,6 @@ class BillManagerService
     /**
      * Opt-in a shortcode for bill manager services.
      *
-     * @param string $shortCode The shortcode to opt-in.
      * @param string $email The email address associated with the shortcode.
      * @param string $officialContact The official contact phone number.
      * @param string $sendReminders Whether to send payment reminders (default: '1').
@@ -21,7 +20,6 @@ class BillManagerService
      * @return array The response from the API.
      */
     public function optIn(
-        string $shortCode,
         string $email,
         string $officialContact,
         string $sendReminders = '1',
@@ -35,7 +33,7 @@ class BillManagerService
         $url = $this->client->baseUrl() . '/v1/billmanager-invoice/optin';
 
         $data = [
-            'shortcode' => $shortCode,
+            'shortcode' => $this->client->shortcode(),
             'email' => $email,
             'officialContact' => $this->client->sanitizePhoneNumber($officialContact),
             'sendReminders' => $sendReminders,
@@ -154,7 +152,7 @@ class BillManagerService
      * @param array $externalReferences An array of unique references for the invoices to be cancelled.
      * @return array The response from the API.
      */
-    public function cancelBulkInvoice(
+    public function cancelBulkInvoices(
         array $externalReferences,
     ): array {
         $url = $this->client->baseUrl() . '/v1/billmanager-invoice/cancel-bulk-invoice';
@@ -176,7 +174,6 @@ class BillManagerService
      * @param string $msisdn The customers PhoneNumber debited.
      * @param string $dateCreated The date the payment was done and recorded in the BillManager System.
      * @param string $accountReference This is the account number being invoiced that uniquely identifies a customer. It could be a customer name, business name, a property unit, a student’s name etc.
-     * @param string|null $shortCode This is organizations shortcode
      *
      * @return array The response from the API.
      */
@@ -186,7 +183,6 @@ class BillManagerService
         string $msisdn,
         string $dateCreated,
         string $accountReference,
-        ?string $shortCode = null
     ): array {
         $url = $this->client->baseUrl() . '/v1/billmanager-invoice/reconciliation';
 
@@ -196,7 +192,7 @@ class BillManagerService
             'msisdn' => $this->client->sanitizePhoneNumber($msisdn),
             'dateCreated' => $dateCreated,
             'accountReference' => $accountReference,
-            'shortCode' => $shortCode ?? $this->client->shortcode(),
+            'shortCode' => $this->client->shortcode(),
         ];
 
         $result = $this->client->makeRequest($url, $data);

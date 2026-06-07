@@ -19,7 +19,6 @@ class B2BService
      * @param string $receiverIdentifierType The type of identifier for the receiver (shortcode, msisdn, or tillnumber).
      * @param string $remarks Remarks for the transaction.
      * @param string $accountReference Account reference for the transaction.
-     * @param string|null $senderShortCode Optional shortcode of the sending business (defaults to client's shortcode).
      * @param string|null $requester Optional requester phone number (sanitized if provided).
      *
      * @return array The response from the M-Pesa API.
@@ -36,7 +35,6 @@ class B2BService
         string $receiverIdentifierType = 'shortcode',
         string $remarks = 'B2B payment',
         string $accountReference = '',
-        ?string $senderShortCode = null,
         ?string $requester = null
     ): array {
         if (! $this->client->isValidUrl($resultUrl)) {
@@ -56,7 +54,7 @@ class B2BService
             'SenderIdentifierType' => 4,
             'RecieverIdentifierType' => $this->client->getIdentifierType($receiverIdentifierType),
             'Amount' => (int) ceil($amount),
-            'PartyA' => $senderShortCode ?? $this->client->shortcode(),
+            'PartyA' => $this->client->shortcode(),
             'PartyB' => $receiverShortCode,
             'Remarks' => $remarks,
             'QueueTimeOutURL' => $queueTimeoutUrl,

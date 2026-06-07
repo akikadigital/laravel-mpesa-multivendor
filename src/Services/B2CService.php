@@ -11,6 +11,19 @@ class B2CService
         protected MpesaClient $client
     ) {}
 
+    /**
+     * Send money from your organization to a customer's mobile phone.
+     *
+     * @param string $phoneNumber The phone number of the customer (in international format, e.g., 2547XXXXXXXX).
+     * @param int|float $amount The amount to be transacted.
+     * @param string $resultUrl The URL to receive the transaction result notifications.
+     * @param string $queueTimeoutUrl The URL to receive timeout notifications if the transaction takes too long.
+     * @param string $remarks Comments that are sent along with the transaction. Maximum 100 characters.
+     * @param string $occasion A reference for the transaction, such as an invoice number or account number. Maximum 100 characters.
+     * @param string $commandId The command ID for the transaction (default: 'BusinessPayment').
+     * @return array The response from the API after initiating the transaction.
+     * @throws \InvalidArgumentException If either of the provided URLs is invalid.
+     */
     public function send(
         string $phoneNumber,
         int|float $amount,
@@ -19,7 +32,6 @@ class B2CService
         string $remarks = 'B2C payment',
         string $occasion = '',
         string $commandId = 'BusinessPayment',
-        ?string $shortCode = null
     ): array {
         if (! $this->client->isValidUrl($resultUrl)) {
             throw new \InvalidArgumentException('Invalid ResultURL.');
@@ -36,57 +48,12 @@ class B2CService
             'SecurityCredential' => $this->client->getSecurityCredential(),
             'CommandID' => $commandId,
             'Amount' => (int) ceil($amount),
-            'PartyA' => $shortCode ?? $this->client->shortcode(),
+            'PartyA' => $this->client->shortcode(),
             'PartyB' => $this->client->sanitizePhoneNumber($phoneNumber),
             'Remarks' => $remarks,
             'QueueTimeOutURL' => $queueTimeoutUrl,
             'ResultURL' => $resultUrl,
             'Occasion' => $occasion,
-        ];
-
-        $result = $this->client->makeRequest($url, $data);
-
-        if ($this->client->isDebugMode()) {
-            info('B2C Response Data', $result);
-        }
-
-        return $result;
-    }
-
-    public function sendToValidatedCustomer(
-        string $msisdn,
-        int|float $amount,
-        string $resultUrl,
-        string $timeoutUrl,
-        string $remarks = 'B2C payment',
-        string $ocassion = '',
-        string $commandID = 'BusinessPayment',
-        ?string $idNumber = null
-    ): array {
-        if (!$this->client->isValidUrl($resultUrl)) {
-            throw new \InvalidArgumentException('Invalid ResultURL');
-        }
-
-        if (!$this->client->isValidUrl($timeoutUrl)) {
-            throw new \InvalidArgumentException('Invalid QueueTimeOutURL');
-        }
-
-        $url = $this->client->baseUrl() . '/mpesa/b2c/v1/paymentrequest';
-
-        $data = [
-            'apiUsername'               =>  $this->client->apiUsername(),
-            'SecurityCredential'        =>  $this->client->getSecurityCredential(),
-            'CommandID'                 =>  $commandID,
-            'Amount'                    =>  floor($amount), // remove decimal points
-            'PartyA'                    =>  $shortCode ?? $this->client->shortcode(),
-            'PartyB'                    =>  $this->client->sanitizePhoneNumber($msisdn),
-            'Remarks'                   =>  $remarks,
-            'Occasion'                  =>  $ocassion, // Can be null
-            'OriginatorConversationID'  =>  Carbon::rawParse('now')->format('YmdHis'), //unique id for the transaction
-            'IDType'                    =>  '01', //01 for national id
-            'IDNumber'                  =>  $idNumber,
-            'QueueTimeOutURL'           =>  $timeoutUrl,
-            'ResultURL'                 =>  $resultUrl,
         ];
 
         $result = $this->client->makeRequest($url, $data);

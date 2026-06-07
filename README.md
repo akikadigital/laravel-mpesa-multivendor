@@ -74,16 +74,6 @@ return [
     'production' => [
         'url' => 'https://api.safaricom.co.ke',
     ],
-    /* Optional parameters for Daraja API:
-    * Ideally, these should be set from the database to allow multivendor support,
-    * however, we can use this as a fallback in case the database values are not set.
-    */
-    'shortcode' => env('MPESA_SHORTCODE', ''),
-    'consumer_key' => env('MPESA_CONSUMER_KEY', ''),
-    'consumer_secret' => env('MPESA_CONSUMER_SECRET', ''),
-    'api_username' => env('MPESA_API_USERNAME', ''),
-    'api_password' => env('MPESA_API_PASSWORD', ''),
-    'passkey' => env('MPESA_PASSKEY', ''),
 ];
 ```
 
@@ -130,7 +120,7 @@ $mpesa = Mpesa::using($credentials);
 
 Daraja utilizes the two main urls for callbacks. Timeout Url and Result Url. The two urls will also be used in this package as follows:
 
-- `$resultUrl`/`$callbackUrl` : Endpoint to send the results in case of success
+- `$resultUrl` or `$callbackUrl` : Endpoint to send the results in case of success
 - `$timeoutUrl` : Endpoint to send the results in case of operations timeout
 
 ### Access Token Management
@@ -162,8 +152,9 @@ You can register validation and confirmation URLs for C2B transactions:
 $response = Mpesa::using($credentials)
     ->c2b()
     ->registerUrls(
-        confirmationUrl: $confirmationUrl,
-        validationUrl: $validationUrl
+        confirmationUrl: $confirmationUrl, // The URL to receive payment confirmation notifications.
+        validationUrl: $validationUrl, // The URL to receive payment validation requests.
+        ResponseType: $ResponseType, // nullable | Either Cancelled or Completed, default is Completed
     );
 ```
 
@@ -177,7 +168,7 @@ $response = Mpesa::using($credentials)
     ->simulate(
         phoneNumber: $phoneNumber,
         amount: $amount,
-        billRefNumber: $billRefNumber
+        billRefNumber: $billRefNumber // Account reference for Customer paybills and null for customer buy goods
     );
 ```
 
@@ -220,6 +211,8 @@ $response = $mpesa->reverse($transactionId, $amount, $receiverShortCode, $remark
 
 You can perform Business to Customer transactions:
 
+#### Send to Customer
+
 ```php
 $response = Mpesa::using($credentials)
     ->b2c()
@@ -227,11 +220,14 @@ $response = Mpesa::using($credentials)
         phoneNumber: $phoneNumber,
         amount: $amount,
         resultUrl: $resultUrl,
-        queueTimeoutUrl: $timeoutUrl
+        queueTimeoutUrl: $timeoutUrl,
+        remarks: $remarks, // Comments that are sent along with the transaction.
+        occasion: $occasion, // A reference for the transaction, such as an invoice number or account number. (Max 100 characters)
+        commandId: $commandId, // The command ID for the transaction (default: 'BusinessPayment')
     );
 ```
 
-### B2C Topup
+#### B2C Topup
 
 This API enables you to load funds to a B2C shortcode directly for disbursement. The transaction moves money from your MMF/Working account to the recipient’s utility account.
 
@@ -249,11 +245,6 @@ $response = Mpesa::using($credentials)
     );
 ```
 
-- $accountReference: A unique (system generated) identifier for the transaction.
-- $receiverShortCode: The shortcode to which money will be moved
-- $amount: The transaction amount.
-- $remarks: Any additional information to be associated with the transaction.
-
 ### Business to Business (B2B) Transactions
 
 #### B2B Paybill/Buy Goods
@@ -270,7 +261,6 @@ $response = Mpesa::using($credentials)
         resultUrl: $resultUrl,
         queueTimeoutUrl: $timeoutUrl,
         accountReference: $accountReference // Optional
-        senderShortCode: $senderShortCode,
         initiator: $initiator,
         requester: $requester
     );
@@ -317,7 +307,6 @@ You can optin to the bill manager service and send invoices:
 $response = Mpesa::using($credentials)
     ->billManager()
     ->optin(
-        shortcode: $shortcode$,
         email: $email,
         officialContact: $officialContact,
         sendReminders: $sendReminders, // 1 or 0
@@ -341,6 +330,105 @@ $response = Mpesa::using($credentials)
         accountReference: $accountReference, // A reference for the account being billed.
         billingPeriod: $billingPeriod, // The billing period (e.g., "June 2026").
         items: $items, // Optional additional billable items to include in the invoice.
+    );
+```
+
+#### Send Bulk Invoices
+
+```php
+$response = Mpesa::using($credentials)
+    ->billManager()
+    ->bulkInvoice(
+        invoices: $invoices
+    );
+```
+
+Below is an array showing sample invoices:
+
+```php
+$invoices = [
+    [
+        "externalReference" => "#9932340",
+        "billedFullName" => "John Doe",
+        "billedPhoneNumber" => "0712345678",
+        "billedPeriod" => "August 2021",
+        "invoiceName" => "Jentrys",
+        "dueDate" => "2021-10-12",
+        "accountReference" => "1ASD678H",
+        "amount" => "800",
+        "invoiceItems" => [
+            [
+                "itemName" => "Food",
+                "amount" => "700",
+            ],
+            [
+                "itemName" => "Water",
+                "amount" => "100",
+            ],
+        ],
+    ],
+
+    [
+        "externalReference" => "#9932341",
+        "billedFullName" => "Jane Smith",
+        "billedPhoneNumber" => "0723456789",
+        "billedPeriod" => "September 2021",
+        "invoiceName" => "BlueWave Supplies",
+        "dueDate" => "2021-11-15",
+        "accountReference" => "2BSD789J",
+        "amount" => "1500",
+        "invoiceItems" => [
+            [
+                "itemName" => "Office Supplies",
+                "amount" => "1200",
+            ],
+            [
+                "itemName" => "Delivery Fee",
+                "amount" => "300",
+            ],
+        ],
+    ],
+
+    [
+        "externalReference" => "#9932342",
+        "billedFullName" => "Peter Mwangi",
+        "billedPhoneNumber" => "0734567890",
+        "billedPeriod" => "October 2021",
+        "invoiceName" => "Tech Solutions",
+        "dueDate" => "2021-12-01",
+        "accountReference" => "3CSD890K",
+        "amount" => "2500",
+        "invoiceItems" => [
+            [
+                "itemName" => "Laptop Repair",
+                "amount" => "2000",
+            ],
+            [
+                "itemName" => "Spare Parts",
+                "amount" => "500",
+            ],
+        ],
+    ],
+];
+```
+
+#### Cancel Single Invoice
+
+```php
+$response = Mpesa::using($credentials)
+    ->billManager()
+    ->cancelSingleInvoice(
+        externalReference: $externalReference // The unique reference of the invoice to be cancelled.
+    );
+```
+
+#### Cancel Bulk Invoices
+
+```php
+$response = Mpesa::using($credentials)
+    ->billManager()
+    ->cancelBulkInvoices(
+        externalReferences: $externalReferences // An array of unique references for the invoices to be cancelled.
     );
 ```
 
