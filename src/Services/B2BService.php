@@ -6,13 +6,12 @@ use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
 class B2BService
 {
-    public function __construct(
-        protected MpesaClient $client
-    ) {}
+    public function __construct(protected MpesaClient $client) {}
 
     /**
      * Send a B2B payment request.
      *
+     * @param bool $toPaybill Whether the payment is to a Paybill (true) or BuyGoods (false) account.
      * @param string $receiverShortCode The shortcode of the receiving business.
      * @param int|float $amount The amount to be sent.
      * @param string $resultUrl The URL to receive the result of the transaction.
@@ -20,7 +19,6 @@ class B2BService
      * @param string $receiverIdentifierType The type of identifier for the receiver (shortcode, msisdn, or tillnumber).
      * @param string $remarks Remarks for the transaction.
      * @param string $accountReference Account reference for the transaction.
-     * @param string $commandId The command ID for the transaction (default is 'BusinessPayBill').
      * @param string|null $senderShortCode Optional shortcode of the sending business (defaults to client's shortcode).
      * @param string|null $initiator Optional initiator name (defaults to client's API username).
      * @param string|null $requester Optional requester phone number (sanitized if provided).
@@ -31,6 +29,7 @@ class B2BService
      */
     
     public function send(
+        bool $toPaybill,
         string $receiverShortCode,
         int|float $amount,
         string $resultUrl,
@@ -38,7 +37,6 @@ class B2BService
         string $receiverIdentifierType = 'shortcode',
         string $remarks = 'B2B payment',
         string $accountReference = '',
-        string $commandId = 'BusinessPayBill',
         ?string $senderShortCode = null,
         ?string $initiator = null,
         ?string $requester = null
@@ -56,7 +54,7 @@ class B2BService
         $data = [
             'Initiator' => $initiator ?? $this->client->apiUsername(),
             'SecurityCredential' => $this->client->getSecurityCredential(),
-            'CommandID' => $commandId,
+            'CommandID' => $toPaybill ? 'BusinessPayBill' : 'BusinessBuyGoods',
             'SenderIdentifierType' => 4,
             'RecieverIdentifierType' => $this->client->getIdentifierType($receiverIdentifierType),
             'Amount' => (int) ceil($amount),
@@ -120,6 +118,65 @@ class B2BService
         if ($this->client->isDebugMode()) {
             info('B2B Express Checkout Data: ' . json_encode($data));
             info('B2B Express Checkout Response Data: ' . json_encode($result));
+        }
+
+        return $result;
+    }
+
+    /**
+     * This API enables you to transfer money from your organization to a customer’s mobile phone. The transaction moves money from the organization’s working account to the customer’s mobile money account.
+     * @param $receiverShortCode - The shortcode of the organization that receives the transaction
+     * @param $amount - The amount to be paid
+     * @param $resultUrl - The endpoint that receives the response of the transaction
+     * @param $timeoutUrl - The endpoint that receives timeout notifications
+     * @param $remarks - Comments that are sent along with the transaction. Maximum 100 characters.
+     * @param $accountReference - A reference for the transaction, such as an invoice number or account number. Maximum 100 characters.
+     * @param $shortCode - The shortcode of the organization sending the payment. Defaults to the configured shortcode.
+     *
+     * @return array The response from the API.
+     *
+     * @throws \InvalidArgumentException If the provided URLs are invalid.
+     */
+    public function topUp(
+        string $receiverShortCode,
+        int|float $amount,
+        string $resultUrl,
+        string $timeoutUrl,
+        string $remarks = 'B2C TopUp',
+        string $accountReference = '',
+        ?string $shortCode = null,
+        ?string $requester = null
+    ): array {
+        if (! $this->client->isValidUrl($resultUrl)) {
+            throw new \InvalidArgumentException('Invalid ResultURL.');
+        }
+
+        if (! $this->client->isValidUrl($timeoutUrl)) {
+            throw new \InvalidArgumentException('Invalid TimeOutURL.');
+        }
+
+        $url = $this->client->baseUrl() . '/mpesa/b2b/v1/paymentrequest';
+
+        $data = [
+            'Initiator' => $this->client->apiUsername(),
+            'SecurityCredential' => $this->client->getSecurityCredential(),
+            'CommandID' => 'BusinessPayToBulk',
+            'SenderIdentifierType' => 4,
+            'RecieverIdentifierType' => 4,
+            'Amount' => floor($amount),
+            'PartyA' => $shortCode ?? $this->client->shortcode(),
+            'PartyB' => $receiverShortCode,
+            'AccountReference' => $accountReference,
+            'Requester' => $this->client->sanitizePhoneNumber($requester),
+            'Remarks' => $remarks,
+            'QueueTimeOutURL' => $timeoutUrl,
+            'ResultURL' => $resultUrl,
+        ];
+
+        $result = $this->client->makeRequest($url, $data);
+
+        if ($this->client->isDebugMode()) {
+            info('B2C TopUp Response Data', $result);
         }
 
         return $result;

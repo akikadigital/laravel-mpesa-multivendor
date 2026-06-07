@@ -6,9 +6,7 @@ use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
 class BongaService
 {
-    public function __construct(
-        protected MpesaClient $client
-    ) {}
+    public function __construct(protected MpesaClient $client) {}
 
     /**
      * Calculate Bonga points for a customer.
@@ -39,21 +37,24 @@ class BongaService
      *
      * @param string $phoneNumber The customer's phone number.
      * @param float $amount The amount to redeem in currency units.
+     * @param string $transactionReference A unique identifier for the transaction, such as an order ID or user ID.
      * @return array The response from the API.
      */
     public function pay(
         string $phoneNumber,
-        float $amount
+        float $amount,
+        string $transactionReference,
+        float $conversionRate = 0.2
     ): array {
         $url = $this->client->baseUrl() . '/v1/lipa/na/bonga/redeem-paybill';
 
         $data = [
             "msisdn" => $this->client->sanitizePhoneNumber($phoneNumber),
             "amount" => $amount,
-            "bongaPoints" => (int) ceil($amount * 0.2), // Assuming a conversion rate of 0.2 points per unit of currency
-            "conversionRate" => 0.2, // This should ideally come from the API or be configurable
+            "bongaPoints" => (int) ceil($amount * $conversionRate),
+            "conversionRate" => $conversionRate,
             "shortCode" => $this->client->shortcode(),
-            "accountNumber" => "test", // This should ideally be a unique identifier for the transaction, such as an order ID or user ID
+            "accountNumber" => $transactionReference,
         ];
 
         $result = $this->client->makeRequest($url, $data);

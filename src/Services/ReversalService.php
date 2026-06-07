@@ -6,10 +6,22 @@ use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
 class ReversalService
 {
-    public function __construct(
-        protected MpesaClient $client
-    ) {}
+    public function __construct(protected MpesaClient $client) {}
 
+    /**
+     * Reverse a transaction.
+     *
+     * @param string $transactionId The ID of the transaction to reverse.
+     * @param int|float $amount The amount to reverse.
+     * @param string $resultUrl The URL to receive the reversal result.
+     * @param string $queueTimeoutUrl The URL to receive timeout notifications.
+     * @param string $remarks Optional remarks for the reversal (default: 'Transaction reversal').
+     * @param string $occasion Optional occasion for the reversal (default: '').
+     * @param string|null $receiverParty Optional receiver party (defaults to client's shortcode).
+     * @param string $receiverIdentifierType The identifier type for the receiver party (default: 'shortcode').
+     * @return array The response from the Mpesa API.
+     * @throws \InvalidArgumentException If any of the provided URLs are invalid.
+     */
     public function reverse(
         string $transactionId,
         int|float $amount,

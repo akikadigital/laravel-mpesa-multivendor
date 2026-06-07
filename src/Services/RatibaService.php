@@ -6,9 +6,7 @@ use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
 class RatibaService
 {
-    public function __construct(
-        protected MpesaClient $client
-    ) {}
+    public function __construct(protected MpesaClient $client) {}
 
     /**
      * Create a standing order
@@ -62,6 +60,12 @@ class RatibaService
         return $this->client->makeRequest($url, $data);
     }
 
+    /**
+     * Query the status of a standing order
+     *
+     * @param string $standingOrderId The ID of the standing order to query
+     * @return array The response from the Mpesa API
+     */
     public function queryStandingOrder(
         string $standingOrderId
     ): array {
@@ -75,6 +79,15 @@ class RatibaService
         return $this->client->makeRequest($url, $data);
     }
 
+    /**
+     * Cancel a standing order
+     *
+     * @param string $standingOrderId The ID of the standing order to cancel
+     * @param string $callbackUrl The URL to receive callbacks
+     * @param string|null $shortCode Optional shortcode to use for cancellation (defaults to client's shortcode)
+     * @return array The response from the Mpesa API
+     * @throws \InvalidArgumentException If the callback URL is invalid
+     */
     public function cancelStandingOrder(
         string $standingOrderId,
         string $callbackUrl,

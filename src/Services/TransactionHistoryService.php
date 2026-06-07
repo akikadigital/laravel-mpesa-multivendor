@@ -6,10 +6,16 @@ use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
 class TransactionHistoryService
 {
-    public function __construct(
-        protected MpesaClient $client
-    ) {}
+    public function __construct(protected MpesaClient $client) {}
 
+    /**
+     * Register a URL to receive transaction history callbacks.
+     *
+     * @param string $nominatedNumber The phone number to receive the transaction history callbacks (in international format, e.g., 2547XXXXXXXX).
+     * @param string $callbackUrl The URL to receive the transaction history callbacks.
+     * @return array The response from the API after registering the callback URL.
+     * @throws \InvalidArgumentException If the provided callback URL is invalid.
+     */
     public function register(
         string $nominatedNumber,
         string $callbackUrl

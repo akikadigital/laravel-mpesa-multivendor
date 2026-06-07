@@ -6,9 +6,7 @@ use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
 class C2BService
 {
-    public function __construct(
-        protected MpesaClient $client
-    ) {}
+    public function __construct(protected MpesaClient $client) {}
 
     public function registerUrls(
         string $confirmationUrl,

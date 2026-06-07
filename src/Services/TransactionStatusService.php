@@ -6,9 +6,7 @@ use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
 class TransactionStatusService
 {
-    public function __construct(
-        protected MpesaClient $client
-    ) {}
+    public function __construct(protected MpesaClient $client) {}
 
     /**
      * Query the status of a transaction.

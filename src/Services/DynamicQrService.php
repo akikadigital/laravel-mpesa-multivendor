@@ -6,9 +6,7 @@ use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
 class DynamicQrService
 {
-    public function __construct(
-        protected MpesaClient $client
-    ) {}
+    public function __construct(protected MpesaClient $client) {}
 
     /**
      * Generate a dynamic QR code for M-Pesa payments.

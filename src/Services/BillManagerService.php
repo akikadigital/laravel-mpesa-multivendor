@@ -6,9 +6,7 @@ use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
 class BillManagerService
 {
-    public function __construct(
-        protected MpesaClient $client
-    ) {}
+    public function __construct(protected MpesaClient $client) {}
 
     /**
      * Opt-in a shortcode for bill manager services.
@@ -107,6 +105,12 @@ class BillManagerService
         return $result;
     }
 
+    /**
+     * Create multiple invoices for different customers in a single request.
+     *
+     * @param array $invoices An array of invoices to be created. Each invoice should have the same structure as the singleInvoice method parameters.
+     * @return array The response from the API.
+     */
     public function bulkInvoice(array $invoices): array
     {
         $url = $this->client->baseUrl() . '/v1/billmanager-invoice/bulk-invoicing';
@@ -120,8 +124,12 @@ class BillManagerService
         return $result;
     }
 
-    // ToConfirm
-
+    /**
+     * Cancel a single invoice using its external reference.
+     *
+     * @param string $externalReference The unique reference of the invoice to be cancelled.
+     * @return array The response from the API.
+     */
     public function cancelSingleInvoice(
         string $externalReference,
     ): array {
@@ -140,6 +148,12 @@ class BillManagerService
         return $result;
     }
 
+    /**
+     * Cancel multiple invoices using their external references.
+     *
+     * @param array $externalReferences An array of unique references for the invoices to be cancelled.
+     * @return array The response from the API.
+     */
     public function cancelBulkInvoice(
         array $externalReferences,
     ): array {
@@ -153,8 +167,6 @@ class BillManagerService
 
         return $result;
     }
-
-    // ToConfirm
 
     /**
      * Reconcile a payment for a bill manager invoice.

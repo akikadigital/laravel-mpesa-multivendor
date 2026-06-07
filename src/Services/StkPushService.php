@@ -6,10 +6,21 @@ use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
 class StkPushService
 {
-    public function __construct(
-        protected MpesaClient $client
-    ) {}
+    public function __construct(protected MpesaClient $client) {}
 
+    /**
+     * Initiate an STK Push payment request.
+     *
+     * @param string $phoneNumber The customer's phone number (in international format, e.g., 2547XXXXXXXX).
+     * @param int|float $amount The amount to be paid.
+     * @param string $callbackUrl The URL to receive the payment result callback.
+     * @param string $accountReference An account reference for the transaction (e.g., invoice number).
+     * @param string $transactionDesc A description for the transaction (optional).
+     * @param string $transactionType The type of transaction (default: 'CustomerPayBillOnline').
+     * @param string|null $partyB Optional party B identifier (defaults to client's shortcode).
+     * @return array The response from the Mpesa API.
+     * @throws \InvalidArgumentException If the callback URL is invalid.
+     */
     public function push(
         string $phoneNumber,
         int|float $amount,
@@ -50,6 +61,12 @@ class StkPushService
         return $result;
     }
 
+    /**
+     * Query the status of an STK Push payment.
+     *
+     * @param string $checkoutRequestId The checkout request ID to query.
+     * @return array The response from the Mpesa API.
+     */
     public function query(string $checkoutRequestId): array
     {
         $timestamp = now()->format('YmdHis');

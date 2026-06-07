@@ -245,7 +245,7 @@ $response = $mpesa->sendInvoice($reference, $billedTo, $phoneNumber, $billingPer
 
 ### Tax Remittance
 
-You can remit tax to the government:
+You can remit tax to the government using this package. To use this API, prior integration is required with KRA for tax declaration, payment registration number (PRN) generation, and exchange of other tax-related information.:
 
 ```php
 $response = $mpesa->taxRemittance($amount, $receiverShortCode, $accountReference, $remarks, $resultUrl, $timeoutUrl);
