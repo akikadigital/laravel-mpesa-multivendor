@@ -66,7 +66,7 @@ class RatibaService
      * @param string $standingOrderId The ID of the standing order to query
      * @return array The response from the Mpesa API
      */
-    public function queryStandingOrder(
+    public function query(
         string $standingOrderId
     ): array {
         $url = $this->client->baseUrl() . '/standingorder/v1/queryStandingOrder';
@@ -84,14 +84,12 @@ class RatibaService
      *
      * @param string $standingOrderId The ID of the standing order to cancel
      * @param string $callbackUrl The URL to receive callbacks
-     * @param string|null $shortCode Optional shortcode to use for cancellation (defaults to client's shortcode)
      * @return array The response from the Mpesa API
      * @throws \InvalidArgumentException If the callback URL is invalid
      */
-    public function cancelStandingOrder(
+    public function cancel(
         string $standingOrderId,
         string $callbackUrl,
-        ?string $shortCode = null
     ): array {
         if (! $this->client->isValidUrl($callbackUrl)) {
             throw new \InvalidArgumentException('Invalid CallbackURL.');
@@ -101,7 +99,7 @@ class RatibaService
 
         $data = [
             'StandingOrderID' => $standingOrderId,
-            'BusinessShortCode' => $shortCode ?? $this->client->shortcode(),
+            'BusinessShortCode' => $this->client->shortcode(),
             'CallBackURL' => $callbackUrl,
         ];
 

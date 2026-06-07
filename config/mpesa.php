@@ -20,5 +20,4 @@ return [
     'api_username' => env('MPESA_API_USERNAME', ''),
     'api_password' => env('MPESA_API_PASSWORD', ''),
     'passkey' => env('MPESA_PASSKEY', ''),
-    'kra_short_code' => env('MPESA_KRA_SHORT_CODE', ''),
 ];

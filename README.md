@@ -24,6 +24,29 @@ php artisan vendor:publish --tag=mpesa-config
 
 This will generate a mpesa.php file in your config directory where you can set your Mpesa credentials and other configuration options.
 
+## Architecture
+
+The package uses a service-based architecture.
+
+Available services:
+
+```php
+Mpesa::using($credentials)->stk();
+Mpesa::using($credentials)->c2b();
+Mpesa::using($credentials)->b2c();
+Mpesa::using($credentials)->b2b();
+Mpesa::using($credentials)->accountBalance();
+Mpesa::using($credentials)->dynamicQr();
+Mpesa::using($credentials)->billManager();
+Mpesa::using($credentials)->taxRemittance();
+Mpesa::using($credentials)->ratiba();
+Mpesa::using($credentials)->transactionHistory();
+Mpesa::using($credentials)->transactionStatus();
+Mpesa::using($credentials)->pochi();
+Mpesa::using($credentials)->org();
+Mpesa::using($credentials)->reversal();
+```
+
 ## Details of the config file
 
 ```php
@@ -71,49 +94,58 @@ All responses, except the token generation response, conform to the responses do
 
 ### Initializing Mpesa
 
+Mpesa can be initialized in two ways:
+
+#### Using Default Configuration
+
 ```php
 use Akika\LaravelMpesaMultivendor\Mpesa;
 
-$mpesa = new Mpesa($mpesaShortCode, $consumerKey, $consumerSecret, $apiUsername, $apiPassword, $parentShortCode = null, $passKey = null);
+$mpesa = Mpesa::default();
 ```
 
-- `$mpesaShortcode`: The shortcode to use for the current operation
-- `$consumerKey`: Obtained from Daraja portal
-- `$consumerSecret`: Obtained from Daraja portal
-- `$apiUsername`: Mpesa portal API user's username
-- `$apiPassword`: Mpesa portal API user's password
-- `$parentShortCode`: Parent mpesa shortcode for parent - child relation
-- `$passKey`: Optional field used for C2B transactions
+#### Using Vendor Credentials
+
+```php
+use Akika\Mpesa\Facades\Mpesa;
+
+// Update the credentials with shortcode based details
+$credentials = [
+    'shortcode' => '600000',
+    'consumer_key' => 'xxx',
+    'consumer_secret' => 'xxx',
+    'api_username' => 'testapi',
+    'api_password' => 'xxx',
+    'passkey' => 'xxx',
+];
+
+$mpesa = Mpesa::using($credentials);
+```
 
 ### Important Urls
 
 Daraja utilizes the two main urls for callbacks. Timeout Url and Result Url. The two urls will also be used in this package as follows:
 
-- `$resultUrl` : Endpoint to send the results in case of success
+- `$resultUrl`/`$callbackUrl` : Endpoint to send the results in case of success
 - `$timeoutUrl` : Endpoint to send the results in case of operations timeout
 
-### Fetching Token
+### Access Token Management
 
-You can fetch the token required for Mpesa API calls as follows:
+Access tokens are automatically generated and cached by the package.
 
-```php
-$token = $mpesa->getToken();
-```
-
-### Reusing already acquired access token
-
-In case you running many mpesa calls in an hour, you do not need to generate new access token every time. Instead, you can save the token and set it on subsequet calls until it expires. Use the function below to set the token:
-
-```php
-$mpesa->setAccessToken($accessToken);
-```
+No manual token management is required.
 
 ### Getting Account Balance
 
 You can fetch mpesa account balance as follows:
 
 ```php
-$balance = $mpesa->getBalance($resultUrl, $timeoutUrl);
+$response = Mpesa::using($credentials)
+    ->accountBalance()
+    ->check(
+        resultUrl: $resultUrl,
+        queueTimeoutUrl: $timeoutUrl
+    );
 ```
 
 ### C2B Transactions
@@ -123,7 +155,12 @@ $balance = $mpesa->getBalance($resultUrl, $timeoutUrl);
 You can register validation and confirmation URLs for C2B transactions:
 
 ```php
-$response = $mpesa->c2bRegisterUrl($confirmationUrl, $validationUrl);
+$response = Mpesa::using($credentials)
+    ->c2b()
+    ->registerUrls(
+        confirmationUrl: $confirmationUrl,
+        validationUrl: $validationUrl
+    );
 ```
 
 #### Simulating C2B Transactions
@@ -131,28 +168,38 @@ $response = $mpesa->c2bRegisterUrl($confirmationUrl, $validationUrl);
 You can simulate payment requests from clients:
 
 ```php
-$response = $mpesa->c2bSimulate($amount, $phoneNumber, $billRefNumber, $commandID);
+$response = Mpesa::using($credentials)
+    ->c2b()
+    ->simulate(
+        phoneNumber: $phoneNumber,
+        amount: $amount,
+        billRefNumber: $billRefNumber
+    );
 ```
-
-- $commandID is either `CustomerPayBillOnline` or `CustomerBuyGoodsOnline` and if not set, the package will assume `CustomerPayBillOnline`
 
 #### Initiating STK Push
 
 You can initiate online payment on behalf of a customer:
 
 ```php
-$response = $mpesa->stkPush($accountReference, $phoneNumber, $amount, $callbackUrl, $receivingShortCode = null, $transactionDesc = null);
+$response = Mpesa::using($credentials)
+    ->stk()
+    ->push(
+        phoneNumber: $phoneNumber,
+        amount: $amount,
+        callbackUrl: $callbackUrl,
+        accountReference: $accountReference
+    );
 ```
-
-- `$receivingShortCode` to be provided if the receiving shortcode is different from the one provided during initialization.
-- `$transactionDesc` can be null
 
 #### Querying STK Push Status
 
 You can query the result of a STK Push transaction:
 
 ```php
-$response = $mpesa->stkPushStatus($checkoutRequestID);
+$response = Mpesa::using($credentials)
+    ->stk()
+    ->query($checkoutRequestId);
 ```
 
 #### Reversing Transactions
@@ -170,17 +217,32 @@ $response = $mpesa->reverse($transactionId, $amount, $receiverShortCode, $remark
 You can perform Business to Customer transactions:
 
 ```php
-$response = $mpesa->b2cTransaction($commandID, $msisdn, $amount, $remarks, $resultUrl, $timeoutUrl, $ocassion);
+$response = Mpesa::using($credentials)
+    ->b2c()
+    ->send(
+        phoneNumber: $phoneNumber,
+        amount: $amount,
+        resultUrl: $resultUrl,
+        queueTimeoutUrl: $timeoutUrl
+    );
 ```
-
-- `$ocassion` is an optional field.
 
 ### B2C Topup
 
 This API enables you to load funds to a B2C shortcode directly for disbursement. The transaction moves money from your MMF/Working account to the recipient’s utility account.
 
 ```php
-$response = $mpesa->b2cTopup($accountReference, $receiverShortCode, $amount, $resultUrl, $timeoutUrl, $remarks);
+$response = Mpesa::using($credentials)
+    ->b2c()
+    ->topUp(
+        receiverShortCode: $receiverShortCode,
+        amount: $amount,
+        resultUrl: $resultUrl,
+        timeoutUrl: $timeoutUrl,
+        remarks: $remarks,
+        accountReference: $accountReference,
+        requester: $requester
+    );
 ```
 
 - $accountReference: A unique (system generated) identifier for the transaction.
@@ -190,43 +252,53 @@ $response = $mpesa->b2cTopup($accountReference, $receiverShortCode, $amount, $re
 
 ### Business to Business (B2B) Transactions
 
-#### B2B Paybill
+#### B2B Paybill/Buy Goods
 
 You can perform Business to Business transactions:
 
 ```php
-$response = $mpesa->b2bPaybill($destShortcode, $amount, $remarks, $accountNumber, $resultUrl, $timeoutUrl, $requester = null);
-```
-
-- `$destShortcode`: This is the party receiving the money.
-- `$accountNumber`: The account number to be associated with the payment. Up to 13 characters.
-- `$requester` is an optional field.
-
-#### B2B Buy Goods
-
-This api accepts variables as provided in section [B2B Paybill](b2b-paybill) above.
-
-```php
-$response = $mpesa->b2bBuyGoods($destShortcode, $amount, $remarks, $accountNumber, $resultUrl, $timeoutUrl, $requester = null);
+$response = Mpesa::using($credentials)
+    ->b2b()
+    ->send(
+        toPaybill: true|false // true for paybill and false for BuyGoods
+        receiverShortCode: $shortcode,
+        amount: $amount,
+        resultUrl: $resultUrl,
+        queueTimeoutUrl: $timeoutUrl,
+        accountReference: $accountReference // Optional
+        senderShortCode: $senderShortCode,
+        initiator: $initiator,
+        requester: $requester
+    );
 ```
 
 #### B2B Express Checkout
 
 ```php
-$response = $mpesa->b2bExpressCheckout($destShortcode, $partnerName, $amount, $paymentReference, $callbackUrl, $requestRefID);
+$response = Mpesa::using($credentials)
+    ->b2b()
+    ->expressCheckout(
+        partnerName: $partnerName, // The name of the organization that receives the transaction
+        destShortcode: $destShortcode,
+        amount: $amount,
+        paymentReference: $paymentReference, // The reference for the payment
+        callbackUrl: $callbackUrl 
+        requestRefID: $requestRefID
+    );
 ```
-
-- `$destShortcode`: This is the party receiving the money.
-- `$partnerName`: This is the organization Friendly name used by the vendor as known by the Merchant.
-- `$paymentReference`: This is a reference to the payment being made. This will appear in the text for easy reference by the merchant. e.g. Order ID
-- `$requestRefID`: This is an auto-genarated reference ID generated by your system.
 
 ### QR Code Generation
 
 You can generate QR codes for making payments:
 
 ```php
-$response = $mpesa->dynamicQR($merchantName, $refNo, $trxCode, $cpi, $size, $amount = null);
+$response = Mpesa::using($credentials)
+    ->dynamicQr()
+    ->generate(
+        merchantName: 'Akika Digital',
+        reference: 'INV001',
+        amount: 100
+    );
 ```
 
 - `$amount` is an optional field
@@ -235,48 +307,128 @@ $response = $mpesa->dynamicQR($merchantName, $refNo, $trxCode, $cpi, $size, $amo
 
 You can optin to the bill manager service and send invoices:
 
-```php
-$response = $mpesa->billManagerOptin($email, $phoneNumber, $sendReminders, $logoUrl, $callbackUrl);
+#### Opt in
 
-$response = $mpesa->sendInvoice($reference, $billedTo, $phoneNumber, $billingPeriod, $invoiceName, $dueDate, $amount, $items);
+```php
+$response = Mpesa::using($credentials)
+    ->billManager()
+    ->optin(
+        shortcode: $shortcode$,
+        email: $email,
+        officialContact: $officialContact,
+        sendReminders: $sendReminders, // 1 or 0
+        logo: $logo, // Optional logo URL for the bill manager account.
+        callbackUrl: $callbackUrl
+    );
 ```
 
-- `$sendReminders` is a boolean field. Allows true or false (1 or 0)
+#### Send Single Invoice
+
+```php
+$response = Mpesa::using($credentials)
+    ->billManager()
+    ->singleInvoice(
+        externalReference: $externalReference, // A unique reference for the invoice.
+        billedFullName: $billedFullName, // The full name of the billed customer.
+        billedPhoneNumber: $billedPhoneNumber, // The phone number of the billed customer.
+        invoiceName: $invoiceName, // A descriptive name for the invoice (e.g., "Water Bill").
+        amount: $amount,
+        dueDate: $dueDate, // The due date for the invoice (in 'Y-m-d' format).
+        accountReference: $accountReference, // A reference for the account being billed.
+        billingPeriod: $billingPeriod, // The billing period (e.g., "June 2026").
+        items: $items, // Optional additional billable items to include in the invoice.
+    );
+```
 
 ### Tax Remittance
 
 You can remit tax to the government using this package. To use this API, prior integration is required with KRA for tax declaration, payment registration number (PRN) generation, and exchange of other tax-related information.:
 
 ```php
-$response = $mpesa->taxRemittance($amount, $receiverShortCode, $accountReference, $remarks, $resultUrl, $timeoutUrl);
+$response = Mpesa::using($credentials)
+    ->taxRemmitance()
+    ->remit(
+        amount: $amount,
+        accountReference: $accountReference, // The payment registration number (PRN) issued by KRA.
+        resultUrl: $resultUrl, 
+        queueTimeoutUrl: $queueTimeoutUrl, // Optional remarks for the transaction (default: 'Tax remittance').
+        remarks: $remarks,
+        commandId: $commandId, // The due date for the invoice (in 'Y-m-d' format).
+        partyA: $partyA,
+    );
 ```
 
 ### Mpesa Ratiba
 
 The Standing Order APIs enable teams to integrate with the standing order solution by initiating a request to create a standing order on the customer profile.
 
+#### Create Standing Order
+
 ```php
-$response = $mpesa->ratiba($name, $startDate, $endDate, $transactionType, $type, $amount, $msisdn, $callbackUrl, $accountReference, $transactionDesc, $frequency)
+$response = Mpesa::using($credentials)
+    ->ratiba()
+    ->createStandingOrder(
+        name: $name,
+        startDate: $startDate,
+        endDate: $endDate, 
+        transactionType: $transactionType,
+        amount: $amount,
+        phoneNumber: $phoneNumber,
+        callbackUrl: $callbackUrl,
+        accountReference: $accountReference,
+        frequency: $frequency,
+        transactionDesc: $transactionDesc
+    );
 ```
 
-- `$name`: Name of standing order that must be unique for each customer.
-- `$startDate`: The date you wish for the standing order to start executing
-- `$endDate`: The date you wish for the standing order to stop executing
-- `$transactionType`: This is the transaction type that is used to identify the transaction when sending the request to M-PESA. Either till or paybill
-- `$type`: This is the transaction type that is used to identify the transaction when sending the request to M-PESA.
-- `$amount`: This is the money that the customer pays to the Shortcode.
-- `$phoneNumber`: The phone number sending money. The parameter expected is a Valid Safaricom Mobile Number that is M-PESA registered in the format 2547XXXXXXXX
-- `$callbackUrl`: This is the endpoint to which the results will be sent.
-- `$accountReference`: This is a unique identifier for the transaction and is generated by the system. It has a maximum limit of 13 characters.
-- `$transactionDesc`: This is any additional information/comment that can be sent along with the request from your system. Maximum of 13 Characters
-- `$frequency`: The frequency of the standing order (one-off, daily, weekly, monthly, bi-monthly, quarterly, half-year, annually)
+#### Query Standing Order
+
+```php
+$response = Mpesa::using($credentials)
+    ->ratiba()
+    ->query(
+        standingOrderId: $standingOrderId
+    );
+```
+
+#### Cancel Standing Order
+
+```php
+$response = Mpesa::using($credentials)
+    ->ratiba()
+    ->cancel(
+        standingOrderId: $standingOrderId, // Standing order to cancel
+        callbackUrl: $callbackUrl,
+    );
+```
 
 ### Mpesa Transaction History
+
+#### Register URL
+
+The URL you register will be used to receive transaction hostories
+
+```php
+$response = Mpesa::using($credentials)
+    ->transactionHistory()
+    ->register(
+        nominatedNumber: $nominatedNumber, // The phone number to receive the transaction history callbacks (in international format, e.g., 2547XXXXXXXX).
+        callbackUrl: $callbackUrl,
+    );
+```
+
+#### Query History
 
 The following API takes in the start and and end dates and returns the transactions between that period.
 
 ```php
-$response = $mpesa->mpesaTransactionsHistory($startDate, $endDate, $offset = 0);
+$response = Mpesa::using($credentials)
+    ->transactionHistory()
+    ->query(
+        startDate: $startDate,
+        endDate: $endDate,
+        offset: $offset,
+    );
 ```
 
 #### Successful Response

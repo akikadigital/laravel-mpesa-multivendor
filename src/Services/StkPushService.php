@@ -17,7 +17,6 @@ class StkPushService
      * @param string $accountReference An account reference for the transaction (e.g., invoice number).
      * @param string $transactionDesc A description for the transaction (optional).
      * @param string $transactionType The type of transaction (default: 'CustomerPayBillOnline').
-     * @param string|null $partyB Optional party B identifier (defaults to client's shortcode).
      * @return array The response from the Mpesa API.
      * @throws \InvalidArgumentException If the callback URL is invalid.
      */
@@ -28,7 +27,6 @@ class StkPushService
         string $accountReference,
         string $transactionDesc = 'STK Push Payment',
         string $transactionType = 'CustomerPayBillOnline',
-        ?string $partyB = null
     ): array {
         if (! $this->client->isValidUrl($callbackUrl)) {
             throw new \InvalidArgumentException('Invalid CallbackURL.');
@@ -45,7 +43,7 @@ class StkPushService
             'TransactionType' => $transactionType,
             'Amount' => (int) ceil($amount),
             'PartyA' => $this->client->sanitizePhoneNumber($phoneNumber),
-            'PartyB' => $partyB ?? $this->client->shortcode(),
+            'PartyB' => $this->client->shortcode(),
             'PhoneNumber' => $this->client->sanitizePhoneNumber($phoneNumber),
             'CallBackURL' => $callbackUrl,
             'AccountReference' => $accountReference,
