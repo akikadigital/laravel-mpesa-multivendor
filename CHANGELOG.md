@@ -136,18 +136,19 @@
 
 ## 0.3.4
 
-- Updates return type for functions from ?object to ?string 
+- Updates return type for functions from ?object to ?string
 
 ## 0.4.0
 
 ### Added
+
 - Added MpesaClient to centralize: Access token generation, Token caching, HTTP request handling, Security credential generation and Helper methods
 - Added MpesaCredentials value object for managing vendor credentials.
 - Added HandlesMpesaHelpers trait for reusable utility methods.
 - Added service-based architecture:
 
+### Changed
 
-### Changed 
 - Refactored monolithic Mpesa class into smaller service classes.
 - Moved token management from database storage to Laravel cache.
 - Implemented automatic access token retrieval and refresh.
@@ -161,10 +162,13 @@
 - Implemented lazy loading of security credentials.
 
 ### Security
+
 - Removed logging of sensitive credentials.
 - Masked or eliminated passkey exposure in debug logs.
+- Added missing important validations
 
 ### Architecture
+
 - Introduced multivendor-friendly credential management.
 - Separated business logic from transport and authentication logic.
 - Reduced Mpesa class responsibility to a service entry point.
