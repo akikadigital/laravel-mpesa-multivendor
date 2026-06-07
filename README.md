@@ -19,7 +19,7 @@ php artisan mpesa-multivendor:install
 The above command will not only enable the package, but also publish the config file. You can use the below command to republish the config file.
 
 ```bash
-php artisan vendor:publish --tag=mpesa-config
+php artisan vendor:publish --tag=mpesa-multivendor-config
 ```
 
 This will generate a mpesa.php file in your config directory where you can set your Mpesa credentials and other configuration options.

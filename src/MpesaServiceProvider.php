@@ -21,15 +21,7 @@ class MpesaServiceProvider extends ServiceProvider
         );
 
         $this->app->singleton('mpesa', function () {
-            // Return a new instance of the Mpesa class with the configuration values
-            return new Mpesa(
-                config('mpesa.shortcode', ''),
-                config('mpesa.consumer_key', ''),
-                config('mpesa.consumer_secret', ''),
-                config('mpesa.api_username', ''),
-                config('mpesa.api_password', ''),
-                config('mpesa.passkey'),
-            );
+            return Mpesa::default();
         });
     }
 
@@ -51,7 +43,7 @@ class MpesaServiceProvider extends ServiceProvider
             // Publish the mpesa config file
             $this->publishes([
                 __DIR__ . '/../config/mpesa.php' => config_path('mpesa.php')
-            ], 'mpesa-config');
+            ], 'mpesa-multivendor-config');
 
             // Register InstallAkikaMpesaMultivendorPackage command
             $this->commands([
