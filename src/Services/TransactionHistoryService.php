@@ -6,7 +6,9 @@ use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
 class TransactionHistoryService
 {
-    public function __construct(protected MpesaClient $client) {}
+    public function __construct(
+        protected MpesaClient $client
+    ) {}
 
     /**
      * Register a URL to receive transaction history callbacks.

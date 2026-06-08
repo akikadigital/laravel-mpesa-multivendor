@@ -6,7 +6,9 @@ use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
 class ImsiService
 {
-    public function __construct(protected MpesaClient $client) {}
+    public function __construct(
+        protected MpesaClient $client
+    ) {}
 
     /**
      * Get the IMSI number for a given phone number.

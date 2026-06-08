@@ -6,7 +6,9 @@ use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
 class TaxRemittanceService
 {
-    public function __construct(protected MpesaClient $client) {}
+    public function __construct(
+        protected MpesaClient $client
+    ) {}
 
     /**
      * Remit tax to KRA using the B2B API.

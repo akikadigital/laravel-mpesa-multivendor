@@ -6,7 +6,9 @@ use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
 class ReversalService
 {
-    public function __construct(protected MpesaClient $client) {}
+    public function __construct(
+        protected MpesaClient $client
+    ) {}
 
     /**
      * Reverse a transaction.

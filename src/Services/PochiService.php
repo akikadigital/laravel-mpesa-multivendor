@@ -6,7 +6,9 @@ use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
 class PochiService
 {
-    public function __construct(protected MpesaClient $client) {}
+    public function __construct(
+        protected MpesaClient $client
+    ) {}
 
     /**
      * Get the account balance for the shortcode
