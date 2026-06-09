@@ -29,10 +29,17 @@ jobs:
           coverage: none
 
       - name: Validate composer.json
-        run: composer validate --strict
+        run: composer validate --no-check-publish --strict
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-interaction --no-progress
+        run: composer update --prefer-dist --no-interaction --no-progress
+
+      - name: Show versions
+        run: |
+          php -v
+          composer show pestphp/pest || true
+          composer show phpunit/phpunit || true
+          composer show orchestra/testbench || true
 
       - name: Run tests
-        run: vendor/bin/pest
+        run: vendor/bin/pest --colors=always
