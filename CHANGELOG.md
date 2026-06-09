@@ -197,3 +197,7 @@
 ## 0.4.2
 
 - Adds receivingShortCode to stk push request
+
+## 0.4.3
+
+- Updates reversal
