@@ -691,9 +691,11 @@ Current test coverage:
 - ✅ 100% Method Coverage
 - ✅ 100% Class Coverage
 
-Coverage report:
+Main coverage report:
 
 ![Coverage Report](coverage.png)
+
+Services coverage report:
 
 ![Services Coverage Report](coverage_services.png)
 
