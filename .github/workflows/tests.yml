@@ -42,4 +42,4 @@ jobs:
           composer show orchestra/testbench || true
 
       - name: Run tests
-        run: vendor/bin/pest --colors=always
+        run: vendor/bin/pest --configuration=phpunit.xml
