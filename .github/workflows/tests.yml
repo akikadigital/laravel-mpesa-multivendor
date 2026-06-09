@@ -7,6 +7,9 @@ on:
       - master
   pull_request:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   tests:
     name: PHP ${{ matrix.php }}
@@ -19,7 +22,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -33,13 +36,6 @@ jobs:
 
       - name: Install dependencies
         run: composer update --prefer-dist --no-interaction --no-progress
-
-      - name: Show versions
-        run: |
-          php -v
-          composer show pestphp/pest || true
-          composer show phpunit/phpunit || true
-          composer show orchestra/testbench || true
 
       - name: Run tests
         run: vendor/bin/pest --configuration=phpunit.xml
