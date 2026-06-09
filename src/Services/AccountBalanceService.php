@@ -20,7 +20,7 @@ class AccountBalanceService
      *
      * @return array The response from the API.
      */
-    public function check(
+    public function query(
         string $resultUrl,
         string $queueTimeoutUrl,
         string $identifierType = 'shortcode',

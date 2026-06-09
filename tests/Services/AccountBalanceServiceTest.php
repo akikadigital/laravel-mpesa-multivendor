@@ -65,7 +65,7 @@ it('checks account balance successfully', function () {
 
     $service = new AccountBalanceService($client);
 
-    $response = $service->check(
+    $response = $service->query(
         resultUrl: 'https://example.com/result',
         queueTimeoutUrl: 'https://example.com/timeout'
     );
@@ -86,7 +86,7 @@ it('throws exception for invalid result url', function () {
 
     $service = new AccountBalanceService($client);
 
-    $service->check(
+    $service->query(
         resultUrl: 'invalid-url',
         queueTimeoutUrl: 'https://example.com/timeout'
     );
@@ -107,7 +107,7 @@ it('throws exception for invalid queue timeout url', function () {
 
     $service = new AccountBalanceService($client);
 
-    $service->check(
+    $service->query(
         resultUrl: 'https://example.com/result',
         queueTimeoutUrl: 'invalid-url'
     );

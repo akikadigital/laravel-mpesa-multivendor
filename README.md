@@ -141,7 +141,7 @@ You can fetch mpesa account balance as follows:
 ```php
 $response = Mpesa::using($credentials)
     ->accountBalance()
-    ->check(
+    ->query(
         resultUrl: $resultUrl,
         queueTimeoutUrl: $timeoutUrl
     );
@@ -508,7 +508,7 @@ The URL you register will be used to receive transaction hostories
 ```php
 $response = Mpesa::using($credentials)
     ->transactionHistory()
-    ->register(
+    ->registerCallbackUrl(
         nominatedNumber: $nominatedNumber, // The phone number to receive the transaction history callbacks (in international format, e.g., 2547XXXXXXXX).
         callbackUrl: $callbackUrl,
     );

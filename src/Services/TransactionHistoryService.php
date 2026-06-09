@@ -18,7 +18,7 @@ class TransactionHistoryService
      * @return array The response from the API after registering the callback URL.
      * @throws \InvalidArgumentException If the provided callback URL is invalid.
      */
-    public function register(
+    public function registerCallbackUrl(
         string $nominatedNumber,
         string $callbackUrl
     ): array {

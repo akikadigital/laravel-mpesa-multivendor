@@ -46,7 +46,7 @@ it('registers transaction history callback successfully', function () {
 
     $service = new TransactionHistoryService($client);
 
-    $response = $service->register(
+    $response = $service->registerCallbackUrl(
         nominatedNumber: '0712345678',
         callbackUrl: $callbackUrl,
     );
@@ -64,7 +64,7 @@ it('throws an exception when transaction history callback url is invalid', funct
 
     $service = new TransactionHistoryService($client);
 
-    $service->register(
+    $service->registerCallbackUrl(
         nominatedNumber: '0712345678',
         callbackUrl: 'invalid-callback-url',
     );

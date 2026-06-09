@@ -98,7 +98,7 @@ it('returns service instances', function () {
         ->and($mpesa->b2c())->toBeInstanceOf(B2CService::class)
         ->and($mpesa->b2b())->toBeInstanceOf(B2BService::class)
         ->and($mpesa->reversal())->toBeInstanceOf(ReversalService::class)
-        ->and($mpesa->transactionStatus())->toBeInstanceOf(TransactionStatusService::class)
+        ->and($mpesa->status())->toBeInstanceOf(TransactionStatusService::class)
         ->and($mpesa->dynamicQr())->toBeInstanceOf(DynamicQrService::class)
         ->and($mpesa->billManager())->toBeInstanceOf(BillManagerService::class)
         ->and($mpesa->taxRemittance())->toBeInstanceOf(TaxRemittanceService::class)

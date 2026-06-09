@@ -127,7 +127,7 @@ class Mpesa
      *
      * @return TransactionStatusService
      */
-    public function transactionStatus(): TransactionStatusService
+    public function status(): TransactionStatusService
     {
         return new TransactionStatusService($this->client);
     }
