@@ -695,6 +695,8 @@ Coverage report:
 
 ![Coverage Report](coverage.png)
 
+![Services Coverage Report](coverage_services.png)
+
 The test suite covers:
 
 - Authentication & Access Token Management
