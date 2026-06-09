@@ -138,38 +138,55 @@
 
 - Updates return type for functions from ?object to ?string
 
-## 0.4.0
+## 0.4.0 - Major Architecture Refactor
 
 ### Added
 
-- Added MpesaClient to centralize: Access token generation, Token caching, HTTP request handling, Security credential generation and Helper methods
-- Added MpesaCredentials value object for managing vendor credentials.
-- Added HandlesMpesaHelpers trait for reusable utility methods.
-- Added service-based architecture:
+* Introduced `MpesaClient` as the centralized HTTP and authentication layer.
+* Added automatic access token generation and caching.
+* Added automatic security credential generation.
+* Added `MpesaCredentials` value object for shortcode-specific credential management.
+* Added reusable helper methods via the `MpesaHelper` trait.
+* Introduced a service-based architecture for all Daraja APIs.
+* Added support for multivendor (multi-shortcode) integrations.
+* Added comprehensive automated test coverage across the package.
 
 ### Changed
 
-- Refactored monolithic Mpesa class into smaller service classes.
-- Moved token management from database storage to Laravel cache.
-- Implemented automatic access token retrieval and refresh.
-- Updated all API responses to return decoded JSON arrays.
-- Replaced facade binding with singleton registration.
-- Added configuration merging using mergeConfigFrom().
-- Renamed publish tag from config to mpesa-config.
-- Improved URL validation logic.
-- Improved phone number sanitization and validation.
-- Added strict type declarations across services and helpers.
-- Implemented lazy loading of security credentials.
+* Refactored the package from a monolithic architecture into dedicated service classes.
+* Simplified API consumption through a unified service entry point.
+* Moved access token storage from database persistence to Laravel cache.
+* Standardized all API responses to return decoded JSON arrays.
+* Replaced facade-only registration with container singleton binding.
+* Improved configuration loading using Laravel's `mergeConfigFrom()`.
+* Renamed configuration publish tag to `mpesa-multivendor-config`.
+* Improved URL validation and phone number sanitization.
+* Added strict typing throughout the package.
+* Implemented lazy loading for security credentials.
 
 ### Security
 
-- Removed logging of sensitive credentials.
-- Masked or eliminated passkey exposure in debug logs.
-- Added missing important validations
+* Removed logging of sensitive credentials and secrets.
+* Improved handling of passkeys and security credentials.
+* Added additional validation checks across API services.
+
+### Testing
+
+* Achieved 100% test coverage.
+* Added unit and feature tests for:
+
+  * Service classes
+  * Authentication and token management
+  * Security credential generation
+  * Service provider registration
+  * Facades
+  * Console commands
+  * Error handling and validation
 
 ### Architecture
 
-- Introduced multivendor-friendly credential management.
-- Separated business logic from transport and authentication logic.
-- Reduced Mpesa class responsibility to a service entry point.
-- Improved package maintainability and extensibility for future Daraja APIs.
+* Separated authentication, transport, and business logic responsibilities.
+* Reduced the `Mpesa` class to a lightweight service entry point.
+* Improved maintainability and extensibility for future Daraja APIs.
+* Established a foundation for long-term package scalability.
+

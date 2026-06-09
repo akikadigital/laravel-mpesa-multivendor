@@ -5,7 +5,7 @@
 
 # Laravel Mpesa Multivendor Package by [Akika Digital](https://akika.digital)
 
-This Laravel package provides convenient methods for integrating [Mpesa Daraja API's](https://developer.safaricom.co.ke/APIs) functionalities into your Laravel application. The package will allow using more than one shortcodes. It also includes the recent Tax Remmittance and Bill Manager APIs.
+Laravel M-Pesa Multivendor is a fully tested Laravel package for integrating [Mpesa Daraja API's](https://developer.safaricom.co.ke/APIs). It supports multiple shortcodes within the same application and provides a clean service-based interface for STK Push, C2B, B2C, B2B, Account Balance, Reversals, Dynamic QR, Bill Manager, Tax Remittance, Ratiba Standing Orders, Transaction History, IMSI Lookup, Organization Verification, and more.
 
 ## Installation
 
