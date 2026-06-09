@@ -1,2 +1,11 @@
 /vendor
-/coverage
+
+# PHPUnit
+.phpunit.cache/
+
+# Coverage reports
+coverage/
+coverage.xml
+
+# Pest
+.pest.cache
