@@ -17,6 +17,7 @@ class StkPushService
      * @param int|float $amount The amount to be paid.
      * @param string $callbackUrl The URL to receive the payment result callback.
      * @param string $accountReference An account reference for the transaction (e.g., invoice number).
+     * @param string $receivingShortCode Shortcode to receive funds, can be null
      * @param string $transactionDesc A description for the transaction (optional).
      * @param string $transactionType The type of transaction (default: 'CustomerPayBillOnline').
      * @return array The response from the Mpesa API.
@@ -27,6 +28,7 @@ class StkPushService
         int|float $amount,
         string $callbackUrl,
         string $accountReference,
+        string $receivingShortCode,
         string $transactionDesc = 'STK Push Payment',
         string $transactionType = 'CustomerPayBillOnline',
     ): array {
@@ -45,7 +47,7 @@ class StkPushService
             'TransactionType' => $transactionType,
             'Amount' => (int) ceil($amount),
             'PartyA' => $this->client->sanitizePhoneNumber($phoneNumber),
-            'PartyB' => $this->client->shortcode(),
+            'PartyB' => $receivingShortCode ?? $this->client->shortcode(),
             'PhoneNumber' => $this->client->sanitizePhoneNumber($phoneNumber),
             'CallBackURL' => $callbackUrl,
             'AccountReference' => $accountReference,

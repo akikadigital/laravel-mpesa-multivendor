@@ -194,3 +194,6 @@
 
 - Renaming core function
 
+## 0.4.2
+
+- Adds receivingShortCode to stk push request

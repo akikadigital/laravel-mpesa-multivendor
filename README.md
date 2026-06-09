@@ -189,6 +189,7 @@ $response = Mpesa::using($credentials)
         amount: $amount,
         callbackUrl: $callbackUrl,
         accountReference: $accountReference
+        receivingShortCode: $receivingShortCode // shortcode to receive funds, if null, the shortcode in credentials is used
     );
 ```
 
