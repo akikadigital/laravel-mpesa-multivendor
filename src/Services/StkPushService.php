@@ -28,9 +28,9 @@ class StkPushService
         int|float $amount,
         string $callbackUrl,
         string $accountReference,
-        string $receivingShortCode,
         string $transactionDesc = 'STK Push Payment',
         string $transactionType = 'CustomerPayBillOnline',
+        ?string $receivingShortCode = null,
     ): array {
         if (! $this->client->isValidUrl($callbackUrl)) {
             throw new \InvalidArgumentException('Invalid CallbackURL.');

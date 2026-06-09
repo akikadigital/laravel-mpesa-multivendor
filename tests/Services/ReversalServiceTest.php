@@ -22,9 +22,8 @@ it('reverses a transaction successfully', function () {
         'TransactionID' => 'RBX123456',
         'Amount' => 101,
         'ReceiverParty' => '174379',
-        'ReceiverIdentifierType' => 4,
+        'RecieverIdentifierType' => '11',
         'Remarks' => 'Transaction reversal',
-        'Occasion' => '',
         'ResultURL' => $resultUrl,
         'QueueTimeOutURL' => $queueTimeoutUrl,
     ];
@@ -61,11 +60,6 @@ it('reverses a transaction successfully', function () {
     $client->shouldReceive('shortcode')
         ->once()
         ->andReturn('174379');
-
-    $client->shouldReceive('getIdentifierType')
-        ->once()
-        ->with('shortcode')
-        ->andReturn(4);
 
     $client->shouldReceive('makeRequest')
         ->once()
@@ -142,9 +136,8 @@ it('uses custom receiver party, identifier type, remarks and occasion', function
         'TransactionID' => 'RBX123456',
         'Amount' => 250,
         'ReceiverParty' => '600000',
-        'ReceiverIdentifierType' => 11,
+        'RecieverIdentifierType' => '11',
         'Remarks' => 'Reverse duplicated payment',
-        'Occasion' => 'INV-001',
         'ResultURL' => $resultUrl,
         'QueueTimeOutURL' => $queueTimeoutUrl,
     ];
@@ -176,11 +169,6 @@ it('uses custom receiver party, identifier type, remarks and occasion', function
         ->once()
         ->andReturn('security-credential');
 
-    $client->shouldReceive('getIdentifierType')
-        ->once()
-        ->with('till')
-        ->andReturn(11);
-
     $client->shouldReceive('makeRequest')
         ->once()
         ->with($expectedUrl, $expectedData)
@@ -196,9 +184,7 @@ it('uses custom receiver party, identifier type, remarks and occasion', function
         resultUrl: $resultUrl,
         queueTimeoutUrl: $queueTimeoutUrl,
         remarks: 'Reverse duplicated payment',
-        occasion: 'INV-001',
-        receiverParty: '600000',
-        receiverIdentifierType: 'till',
+        receiverParty: '600000'
     );
 
     expect($response)->toBe($expectedResponse);

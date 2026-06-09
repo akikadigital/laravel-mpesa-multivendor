@@ -208,10 +208,15 @@ $response = Mpesa::using($credentials)
 You can reverse a C2B M-Pesa transaction:
 
 ```php
-$response = $mpesa->reverse($transactionId, $amount, $receiverShortCode, $remarks, $resultUrl, $timeoutUrl, $ocassion);
+$response = Mpesa::using($credentials)
+    ->reversal()
+    ->reverse(
+        transactionId: $transactionId,
+        amount: $amount,
+        resultUrl: $resultUrl,
+        queueTimeoutUrl: $timeoutUrl
+    );
 ```
-
-- `$ocassion` is an optional field
 
 ### Business to Customer (B2C) Transactions
 
