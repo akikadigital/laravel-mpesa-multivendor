@@ -1,6 +1,6 @@
-![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
+![Tests](https://github.com/akikadigital/laravel-mpesa-multivendor/actions/workflows/tests.yml/badge.svg)
 ![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)
-![Laravel](https://img.shields.io/badge/Laravel-10|11|12-red)
+![Laravel](https://img.shields.io/badge/Laravel-8|9|10|11|12-red)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 # Laravel Mpesa Multivendor Package by [Akika Digital](https://akika.digital)
