@@ -190,3 +190,7 @@
 * Improved maintainability and extensibility for future Daraja APIs.
 * Established a foundation for long-term package scalability.
 
+## 0.4.1
+
+- Renaming core function
+
