@@ -60,12 +60,6 @@ class TransactionStatusService
             'Occasion' => $occasion,
         ];
 
-        $result = $this->client->makeRequest($url, $data);
-
-        if ($this->client->isDebugMode()) {
-            info('Transaction Status Response Data', $result);
-        }
-
-        return $result;
+        return $this->client->makeRequest($url, $data);
     }
 }

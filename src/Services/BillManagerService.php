@@ -43,13 +43,7 @@ class BillManagerService
             'callbackurl' => $callbackUrl,
         ];
 
-        $result = $this->client->makeRequest($url, $data);
-
-        if ($this->client->isDebugMode()) {
-            info('Bill Manager Opt-In Response Data', $result);
-        }
-
-        return $result;
+        return $this->client->makeRequest($url, $data);
     }
 
     /**
@@ -96,13 +90,7 @@ class BillManagerService
             'invoiceItems'      => $items // These are additional billable items that you need included in your invoice. 
         ];
 
-        $result = $this->client->makeRequest($url, $data);
-
-        if ($this->client->isDebugMode()) {
-            info('Single Invoice Response Data', $result);
-        }
-
-        return $result;
+        return $this->client->makeRequest($url, $data);
     }
 
     /**
@@ -115,13 +103,7 @@ class BillManagerService
     {
         $url = $this->client->baseUrl() . '/v1/billmanager-invoice/bulk-invoicing';
 
-        $result = $this->client->makeRequest($url, $invoices);
-
-        if ($this->client->isDebugMode()) {
-            info('Bulk Invoice Response Data', $result);
-        }
-
-        return $result;
+        return $this->client->makeRequest($url, $invoices);
     }
 
     /**
@@ -139,13 +121,7 @@ class BillManagerService
             'externalReference' => $externalReference,
         ];
 
-        $result = $this->client->makeRequest($url, $data);
-
-        if ($this->client->isDebugMode()) {
-            info('Cancel Single Invoice Response Data', $result);
-        }
-
-        return $result;
+        return $this->client->makeRequest($url, $data);
     }
 
     /**
@@ -159,13 +135,7 @@ class BillManagerService
     ): array {
         $url = $this->client->baseUrl() . '/v1/billmanager-invoice/cancel-bulk-invoice';
 
-        $result =  $this->client->makeRequest($url, $externalReferences);
-
-        if ($this->client->isDebugMode()) {
-            info('Cancel Bulk Invoice Response Data', $result);
-        }
-
-        return $result;
+        return $this->client->makeRequest($url, $externalReferences);
     }
 
     /**
@@ -197,12 +167,6 @@ class BillManagerService
             'shortCode' => $this->client->shortcode(),
         ];
 
-        $result = $this->client->makeRequest($url, $data);
-
-        if ($this->client->isDebugMode()) {
-            info('Reconciliation Response Data', $result);
-        }
-
-        return $result;
+        return $this->client->makeRequest($url, $data);
     }
 }

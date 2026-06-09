@@ -52,13 +52,7 @@ class StkPushService
             'TransactionDesc' => $transactionDesc,
         ];
 
-        $result = $this->client->makeRequest($url, $data);
-
-        if ($this->client->isDebugMode()) {
-            info('STK Push Response Data', $result);
-        }
-
-        return $result;
+        return $this->client->makeRequest($url, $data);
     }
 
     /**
@@ -80,12 +74,6 @@ class StkPushService
             'CheckoutRequestID' => $checkoutRequestId,
         ];
 
-        $result = $this->client->makeRequest($url, $data);
-
-        if ($this->client->isDebugMode()) {
-            info('STK Push Query Response Data', $result);
-        }
-
-        return $result;
+        return $this->client->makeRequest($url, $data);
     }
 }

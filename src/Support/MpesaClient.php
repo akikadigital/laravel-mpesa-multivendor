@@ -2,12 +2,16 @@
 
 namespace Akika\LaravelMpesaMultivendor\Support;
 
-use Akika\LaravelMpesaMultivendor\Support\Concerns\HandlesMpesaHelpers;
+use Akika\LaravelMpesaMultivendor\Support\Helpers\MpesaHelper;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use InvalidArgumentException;
+use RuntimeException;
+
 class MpesaClient
 {
-    use HandlesMpesaHelpers;
+    use MpesaHelper;
 
     protected string $environment;
 
@@ -22,7 +26,8 @@ class MpesaClient
      *
      * @param MpesaCredentials $credentials
      */
-    public function __construct(protected MpesaCredentials $credentials) {
+    public function __construct(protected MpesaCredentials $credentials)
+    {
         $this->environment = config('mpesa.env', 'sandbox');
         $this->debugMode = (bool) config('mpesa.debug', false);
         $this->baseUrl = config("mpesa.{$this->environment}.url", '');
@@ -88,17 +93,11 @@ class MpesaClient
             ->acceptJson()
             ->asJson()
             ->timeout(30)
-            ->retry(2, 500)
+            ->retry(2, 500, throw: false)
             ->post($url, $body);
 
         if (! $response->successful()) {
-            logger()->error('Daraja HTTP request failed', [
-                'url' => $url,
-                'status' => $response->status(),
-                'body' => $response->body(),
-            ]);
-
-            throw new \RuntimeException('Daraja request failed with status ' . $response->status());
+            throw new RuntimeException('Daraja request failed with status ' . $response->status());
         }
 
         return $response->json() ?? [];
@@ -141,7 +140,7 @@ class MpesaClient
         )->get($url);
 
         if (! $response->successful()) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'Failed to fetch M-Pesa access token: ' . $response->body()
             );
         }
@@ -149,7 +148,7 @@ class MpesaClient
         $token = $response->json('access_token');
 
         if (! $token) {
-            throw new \RuntimeException('M-Pesa access token was not returned.');
+            throw new RuntimeException('M-Pesa access token was not returned.');
         }
 
         return $token;
@@ -163,7 +162,7 @@ class MpesaClient
     public function generatePassword(string $timestamp): string
     {
         if (! $this->credentials->passkey) {
-            throw new \InvalidArgumentException('M-Pesa passkey is required.');
+            throw new InvalidArgumentException('M-Pesa passkey is required.');
         }
 
         return base64_encode(
@@ -191,7 +190,7 @@ class MpesaClient
     protected function generateCertificate(): string
     {
         if (! $this->credentials->apiPassword) {
-            throw new \InvalidArgumentException('M-Pesa API password is required.');
+            throw new InvalidArgumentException('M-Pesa API password is required.');
         }
 
         $certificate = $this->environment === 'sandbox'
@@ -202,13 +201,22 @@ class MpesaClient
 
         $encrypted = null;
 
-        if (! openssl_public_encrypt(
-            $this->credentials->apiPassword,
-            $encrypted,
-            $publicKey,
-            OPENSSL_PKCS1_PADDING
-        )) {
-            throw new \RuntimeException('Unable to encrypt M-Pesa initiator password.');
+        try {
+            $success = openssl_public_encrypt(
+                $this->credentials->apiPassword,
+                $encrypted,
+                $publicKey,
+                OPENSSL_PKCS1_PADDING
+            );
+
+            if (! $success) {
+                throw new RuntimeException(openssl_error_string() ?: 'OpenSSL encryption failed.');
+            }
+        } catch (\Throwable $e) {
+            throw new RuntimeException(
+                'Unable to encrypt M-Pesa initiator password.',
+                previous: $e
+            );
         }
 
         return base64_encode($encrypted);
@@ -222,7 +230,7 @@ class MpesaClient
     protected function ensureConsumerCredentials(): void
     {
         if (! $this->credentials->consumerKey || ! $this->credentials->consumerSecret) {
-            throw new \InvalidArgumentException('M-Pesa consumer key and secret are required.');
+            throw new InvalidArgumentException('M-Pesa consumer key and secret are required.');
         }
     }
 }

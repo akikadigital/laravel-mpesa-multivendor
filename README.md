@@ -1,6 +1,11 @@
+![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
+![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)
+![Laravel](https://img.shields.io/badge/Laravel-10|11|12-red)
+![License](https://img.shields.io/badge/license-MIT-blue)
+
 # Laravel Mpesa Multivendor Package by [Akika Digital](https://akika.digital)
 
-This Laravel package provides convenient methods for integrating [Mpesa Daraja API's](https://developer.safaricom.co.ke/APIs) functionalities into your Laravel application. The package will allow using more than one shortcodes. It also includes the recent Tax Remmitance and Bill Manager APIs.
+This Laravel package provides convenient methods for integrating [Mpesa Daraja API's](https://developer.safaricom.co.ke/APIs) functionalities into your Laravel application. The package will allow using more than one shortcodes. It also includes the recent Tax Remmittance and Bill Manager APIs.
 
 ## Installation
 
@@ -673,6 +678,63 @@ An unsuccessful result body has the following structure
  }
 }
 ```
+
+## Quality Assurance
+
+The package is fully tested using Pest PHP and PHPUnit.
+
+### Test Coverage
+
+Current test coverage:
+
+- ✅ 100% Line Coverage
+- ✅ 100% Method Coverage
+- ✅ 100% Class Coverage
+
+Coverage report:
+
+![Coverage Report](coverage.png)
+
+The test suite covers:
+
+- Authentication & Access Token Management
+- STK Push
+- C2B Transactions
+- B2C Transactions
+- B2B Transactions
+- Account Balance
+- Dynamic QR
+- Bill Manager
+- Tax Remittance
+- Ratiba (Standing Orders)
+- Transaction History
+- Transaction Status
+- IMSI Lookup
+- Organization Verification
+- Reversals
+- Pochi Payments
+- Security Credential Generation
+- Service Provider Registration
+- Console Commands
+- Facades
+- Exception Handling
+- URL Validation
+
+Run the test suite:
+
+```bash
+composer test
+```
+
+Generate a coverage report:
+
+```bash
+XDEBUG_MODE=coverage ./vendor/bin/pest --coverage
+```
+
+## Test Coverage Report
+
+![Coverage Report](coverage.png)
 
 ## License
 

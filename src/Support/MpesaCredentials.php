@@ -49,11 +49,11 @@ class MpesaCredentials
     public static function fromConfig(): self
     {
         return new self(
-            shortcode: config('mpesa.shortcode', ''),
-            consumerKey: config('mpesa.consumer_key', ''),
-            consumerSecret: config('mpesa.consumer_secret', ''),
-            apiUsername: config('mpesa.api_username', ''),
-            apiPassword: config('mpesa.api_password', ''),
+            shortcode: config('mpesa.shortcode') ?? '',
+            consumerKey: config('mpesa.consumer_key') ?? '',
+            consumerSecret: config('mpesa.consumer_secret') ?? '',
+            apiUsername: config('mpesa.api_username') ?? '',
+            apiPassword: config('mpesa.api_password') ?? '',
             passkey: config('mpesa.passkey'),
         );
     }

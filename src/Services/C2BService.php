@@ -41,13 +41,7 @@ class C2BService
             'ValidationURL' => $validationUrl,
         ];
 
-        $result = $this->client->makeRequest($url, $data);
-
-        if ($this->client->isDebugMode()) {
-            info('C2B Register URL Response Data', $result);
-        }
-
-        return $result;
+        return $this->client->makeRequest($url, $data);
     }
 
     /**
@@ -73,12 +67,6 @@ class C2BService
             'BillRefNumber' => $billRefNumber,
         ];
 
-        $result = $this->client->makeRequest($url, $data);
-
-        if ($this->client->isDebugMode()) {
-            info('C2B Simulate Response Data', $result);
-        }
-
-        return $result;
+        return $this->client->makeRequest($url, $data);
     }
 }

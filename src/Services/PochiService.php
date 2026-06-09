@@ -42,12 +42,6 @@ class PochiService
             "Occassion" => $ocassion,
         ];
 
-        $result = $this->client->makeRequest($url, $data);
-
-        if ($this->client->isDebugMode()) {
-            info('B2C Response Data', $result);
-        }
-
-        return $result;
+        return $this->client->makeRequest($url, $data);
     }
 }

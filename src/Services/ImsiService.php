@@ -25,12 +25,6 @@ class ImsiService
             'customerNumber' => $this->client->sanitizePhoneNumber($phoneNumber),
         ];
 
-        $result = $this->client->makeRequest($url, $data);
-
-        if ($this->client->isDebugMode()) {
-            info('IMSI Request Response Data', $result);
-        }
-
-        return $result;
+        return $this->client->makeRequest($url, $data);
     }
 }

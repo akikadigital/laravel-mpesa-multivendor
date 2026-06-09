@@ -47,12 +47,6 @@ class AccountBalanceService
             'ResultURL' => $resultUrl,
         ];
 
-        $result = $this->client->makeRequest($url, $data);
-
-        if ($this->client->isDebugMode()) {
-            info('Account Balance Response Data', $result);
-        }
-
-        return $result;
+        return $this->client->makeRequest($url, $data);
     }
 }

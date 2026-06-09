@@ -35,13 +35,7 @@ class TransactionHistoryService
             'CallBackURL' => $callbackUrl,
         ];
 
-        $result = $this->client->makeRequest($url, $data);
-
-        if ($this->client->isDebugMode()) {
-            info('Transaction History Response Data', $result);
-        }
-
-        return $result;
+        return $this->client->makeRequest($url, $data);
     }
 
     /**
@@ -70,12 +64,6 @@ class TransactionHistoryService
             'OffSetValue' => $offset,
         ];
 
-        $result = $this->client->makeRequest($url, $data);
-
-        if ($this->client->isDebugMode()) {
-            info('Transaction History Response Data', $result);
-        }
-
-        return $result;
+        return $this->client->makeRequest($url, $data);
     }
 }

@@ -1,44 +1,65 @@
 {
-    "name": "akika/laravel-mpesa-multivendor",
-    "description": "A multivendor Laravel package for integrating Safaricom M-Pesa Daraja APIs.. The package supports Laravel version 5 and above. It allows seamless Mpesa transactions for multiple vendors",
-    "homepage": "https://github.com/akikadigital/laravel-mpesa-multivendor",
-    "type": "library",
-    "keywords": [
-        "mpesa",
-        "m-pesa",
-        "daraja",
-        "safaricom",
-        "laravel",
-        "payment",
-        "multivendor",
-        "multi-tenant"
-    ],
-    "minimum-stability": "dev",
-    "require": {
-        "php": "^8.0",
-        "illuminate/support": "^8.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0 || ^13.0",
-		"illuminate/http":"^8.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0 || ^13.0"
-    },
-    "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "Akika\\LaravelMpesaMultivendor\\": "src/"
-        }
-    },
-    "authors": [
-        {
-            "name": "Felix Nyabwari",
-            "email": "fenicfelix@gmail.com"
-        }
-    ],
-    "extra": {
-		"laravel": {
-			"providers": [
-				"Akika\\LaravelMpesaMultivendor\\MpesaServiceProvider"
-			],
-			"aliases": {
-				"Mpesa": "Akika\\LaravelMpesaMultivendor\\Facades\\Mpesa"
-			}
-		}
-  	}
+  "name": "akika/laravel-mpesa-multivendor",
+  "description": "A multivendor Laravel package for integrating Safaricom M-Pesa Daraja APIs. It allows seamless M-Pesa transactions for multiple vendors.",
+  "homepage": "https://github.com/akikadigital/laravel-mpesa-multivendor",
+  "type": "library",
+  "keywords": [
+    "mpesa",
+    "m-pesa",
+    "daraja",
+    "safaricom",
+    "laravel",
+    "payment",
+    "multivendor",
+    "multi-tenant"
+  ],
+  "minimum-stability": "stable",
+  "prefer-stable": true,
+  "require": {
+    "php": "^8.0",
+    "illuminate/support": "^8.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0",
+    "illuminate/http": "^8.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0"
+  },
+  "require-dev": {
+    "orchestra/testbench": "^10.11",
+    "pestphp/pest": "^2.0 || ^3.0",
+    "pestphp/pest-plugin-laravel": "^2.0 || ^3.0"
+  },
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Akika\\LaravelMpesaMultivendor\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Akika\\LaravelMpesaMultivendor\\Tests\\": "tests/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Felix Nyabwari",
+      "email": "fenicfelix@gmail.com"
+    }
+  ],
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Akika\\LaravelMpesaMultivendor\\MpesaServiceProvider"
+      ],
+      "aliases": {
+        "Mpesa": "Akika\\LaravelMpesaMultivendor\\Facades\\Mpesa"
+      }
+    }
+  },
+  "scripts": {
+    "test": "pest",
+    "test:coverage": "XDEBUG_MODE=coverage pest --coverage",
+    "test:html": "XDEBUG_MODE=coverage pest --coverage-html coverage"
+  },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  }
 }

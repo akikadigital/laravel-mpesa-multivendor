@@ -6,9 +6,7 @@ use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
 class B2BService
 {
-    public function __construct(
-        protected MpesaClient $client
-    ) {}
+    public function __construct(protected MpesaClient $client) {}
 
     /**
      * Send a B2B payment request.
@@ -65,13 +63,7 @@ class B2BService
             'Requester' =>  $requester !== null ? $this->client->sanitizePhoneNumber($requester) : null, // Optional. The consumer’s mobile number on behalf of whom you are paying.
         ];
 
-        $result = $this->client->makeRequest($url, $data);
-
-        if ($this->client->isDebugMode()) {
-            info('B2B Response Data', $result);
-        }
-
-        return $result;
+        return $this->client->makeRequest($url, $data);
     }
 
     /**
@@ -111,13 +103,6 @@ class B2BService
             'RequestRefID' => $requestRefID
         ];
 
-        $result = $this->client->makeRequest($url, $data);
-
-        if ($this->client->isDebugMode()) {
-            info('B2B Express Checkout Data: ' . json_encode($data));
-            info('B2B Express Checkout Response Data: ' . json_encode($result));
-        }
-
-        return $result;
+        return $this->client->makeRequest($url, $data);
     }
 }
