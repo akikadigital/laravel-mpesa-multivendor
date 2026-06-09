@@ -1,11 +1,13 @@
 /vendor
+composer.lock
 
-# PHPUnit
 .phpunit.cache/
+.pest.cache
 
-# Coverage reports
 coverage/
 coverage.xml
 
-# Pest
-.pest.cache
+.idea/
+.vscode/
+
+.DS_Store
