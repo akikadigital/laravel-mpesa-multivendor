@@ -732,10 +732,6 @@ Generate a coverage report:
 XDEBUG_MODE=coverage ./vendor/bin/pest --coverage
 ```
 
-## Test Coverage Report
-
-![Coverage Report](coverage.png)
-
 ## License
 
 The Laravel Mpesa package is open-sourced software licensed under the MIT license. See the LICENSE file for details.
