@@ -30,13 +30,9 @@ class ReversalService
         string $remarks = 'Transaction reversal',
         ?string $receiverParty = null,
     ): array {
-        if (! $this->client->isValidUrl($resultUrl)) {
-            throw new \InvalidArgumentException('Invalid ResultURL.');
-        }
 
-        if (! $this->client->isValidUrl($queueTimeoutUrl)) {
-            throw new \InvalidArgumentException('Invalid QueueTimeOutURL.');
-        }
+        $this->client->validateUrl($resultUrl, 'Invalid ResultURL.');
+        $this->client->validateUrl($queueTimeoutUrl, 'Invalid QueueTimeOutURL.');
 
         $url = $this->client->baseUrl() . '/mpesa/reversal/v1/request';
 

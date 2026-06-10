@@ -201,3 +201,7 @@
 ## 0.4.3
 
 - Updates reversal
+
+## 0.4.4
+
+- Separates b2b paybill from buy goods

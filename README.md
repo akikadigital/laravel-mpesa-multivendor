@@ -258,21 +258,37 @@ $response = Mpesa::using($credentials)
 
 ### Business to Business (B2B) Transactions
 
-#### B2B Paybill/Buy Goods
+#### B2B Buy Goods
 
 You can perform Business to Business transactions:
 
 ```php
 $response = Mpesa::using($credentials)
     ->b2b()
-    ->send(
-        toPaybill: true|false // true for paybill and false for BuyGoods
+    ->buyGoods(
         receiverShortCode: $shortcode,
         amount: $amount,
         resultUrl: $resultUrl,
         queueTimeoutUrl: $timeoutUrl,
-        accountReference: $accountReference // Optional
-        initiator: $initiator,
+        remarks: $remarks,
+        requester: $requester
+    );
+```
+
+#### B2B Paybill
+
+You can perform Business to Business transactions:
+
+```php
+$response = Mpesa::using($credentials)
+    ->b2b()
+    ->paybill(
+        receiverShortCode: $shortcode,
+        amount: $amount,
+        accountReference: $accountReference
+        resultUrl: $resultUrl,
+        queueTimeoutUrl: $timeoutUrl,
+        remarks: $remarks,
         requester: $requester
     );
 ```

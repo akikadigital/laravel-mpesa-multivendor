@@ -1,8 +1,10 @@
 <?php
 
-use Illuminate\Support\Carbon;
 use Akika\LaravelMpesaMultivendor\Services\StkPushService;
 use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
+use Carbon\Carbon;
+
+uses()->group('services', 'stk-push');
 
 beforeEach(function () {
     Carbon::setTestNow(Carbon::create(2026, 6, 9, 10, 30, 45));
@@ -43,14 +45,12 @@ it('initiates an stk push request successfully', function () {
         'CustomerMessage' => 'Success. Request accepted for processing',
     ];
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with($callbackUrl)
-        ->andReturnTrue();
+        ->with($callbackUrl, 'Invalid CallbackURL.')
+        ->andReturnNull();
 
-    $client->shouldReceive('baseUrl')
-        ->once()
-        ->andReturn('https://sandbox.safaricom.co.ke');
+    $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
 
     $client->shouldReceive('shortcode')
         ->twice()
@@ -83,13 +83,81 @@ it('initiates an stk push request successfully', function () {
     expect($response)->toBe($expectedResponse);
 });
 
+it('initiates an stk push request with custom receiving shortcode', function () {
+    $client = \Mockery::mock(MpesaClient::class);
+
+    $callbackUrl = 'https://example.com/mpesa/callback';
+    $timestamp = '20260609103045';
+
+    $expectedUrl = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
+
+    $expectedData = [
+        'BusinessShortCode' => '174379',
+        'Password' => 'generated-password',
+        'Timestamp' => $timestamp,
+        'TransactionType' => 'CustomerBuyGoodsOnline',
+        'Amount' => 250,
+        'PartyA' => '254712345678',
+        'PartyB' => '600000',
+        'PhoneNumber' => '254712345678',
+        'CallBackURL' => $callbackUrl,
+        'AccountReference' => 'INV-002',
+        'TransactionDesc' => 'Custom STK payment',
+    ];
+
+    $expectedResponse = [
+        'ResponseCode' => '0',
+        'ResponseDescription' => 'Success. Request accepted for processing',
+    ];
+
+    $client->shouldReceive('validateUrl')
+        ->once()
+        ->with($callbackUrl, 'Invalid CallbackURL.')
+        ->andReturnNull();
+
+    $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
+
+    $client->shouldReceive('shortcode')
+        ->once()
+        ->andReturn('174379');
+
+    $client->shouldReceive('generatePassword')
+        ->once()
+        ->with($timestamp)
+        ->andReturn('generated-password');
+
+    $client->shouldReceive('sanitizePhoneNumber')
+        ->twice()
+        ->with('0712345678')
+        ->andReturn('254712345678');
+
+    $client->shouldReceive('makeRequest')
+        ->once()
+        ->with($expectedUrl, $expectedData)
+        ->andReturn($expectedResponse);
+
+    $service = new StkPushService($client);
+
+    $response = $service->push(
+        phoneNumber: '0712345678',
+        amount: 250,
+        callbackUrl: $callbackUrl,
+        accountReference: 'INV-002',
+        transactionDesc: 'Custom STK payment',
+        transactionType: 'CustomerBuyGoodsOnline',
+        receivingShortCode: '600000',
+    );
+
+    expect($response)->toBe($expectedResponse);
+});
+
 it('throws an exception when callback url is invalid', function () {
     $client = \Mockery::mock(MpesaClient::class);
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with('invalid-url')
-        ->andReturnFalse();
+        ->with('invalid-url', 'Invalid CallbackURL.')
+        ->andThrow(new InvalidArgumentException('Invalid CallbackURL.'));
 
     $service = new StkPushService($client);
 
@@ -124,13 +192,8 @@ it('queries stk push payment status successfully', function () {
         'ResultDesc' => 'The service request is processed successfully.',
     ];
 
-    $client->shouldReceive('baseUrl')
-        ->once()
-        ->andReturn('https://sandbox.safaricom.co.ke');
-
-    $client->shouldReceive('shortcode')
-        ->once()
-        ->andReturn('174379');
+    $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
+    $client->shouldReceive('shortcode')->once()->andReturn('174379');
 
     $client->shouldReceive('generatePassword')
         ->once()

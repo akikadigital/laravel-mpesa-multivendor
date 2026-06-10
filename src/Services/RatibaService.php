@@ -38,9 +38,8 @@ class RatibaService
         string $frequency,
         string $transactionDesc = 'Ratiba standing order'
     ): array {
-        if (! $this->client->isValidUrl($callbackUrl)) {
-            throw new \InvalidArgumentException('Invalid CallbackURL.');
-        }
+        
+        $this->client->validateUrl($callbackUrl, 'Invalid CallbackURL.');
 
         $url = $this->client->baseUrl() . '/standingorder/v1/createStandingOrderExternal';
 
@@ -93,9 +92,8 @@ class RatibaService
         string $standingOrderId,
         string $callbackUrl,
     ): array {
-        if (! $this->client->isValidUrl($callbackUrl)) {
-            throw new \InvalidArgumentException('Invalid CallbackURL.');
-        }
+
+        $this->client->validateUrl($callbackUrl, 'Invalid CallbackURL.');
 
         $url = $this->client->baseUrl() . '/standingorder/v1/cancelStandingOrderExternal';
 

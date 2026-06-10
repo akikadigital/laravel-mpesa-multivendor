@@ -33,13 +33,9 @@ class B2CService
         string $occasion = '',
         string $commandId = 'BusinessPayment',
     ): array {
-        if (! $this->client->isValidUrl($resultUrl)) {
-            throw new \InvalidArgumentException('Invalid ResultURL.');
-        }
 
-        if (! $this->client->isValidUrl($queueTimeoutUrl)) {
-            throw new \InvalidArgumentException('Invalid QueueTimeOutURL.');
-        }
+        $this->client->validateUrl($resultUrl, 'Invalid ResultURL.');
+        $this->client->validateUrl($queueTimeoutUrl, 'Invalid QueueTimeOutURL.');
 
         $url = $this->client->baseUrl() . '/mpesa/b2c/v1/paymentrequest';
 
@@ -81,13 +77,9 @@ class B2CService
         string $accountReference = '',
         ?string $requester = null
     ): array {
-        if (! $this->client->isValidUrl($resultUrl)) {
-            throw new \InvalidArgumentException('Invalid ResultURL.');
-        }
 
-        if (! $this->client->isValidUrl($timeoutUrl)) {
-            throw new \InvalidArgumentException('Invalid TimeOutURL.');
-        }
+        $this->client->validateUrl($resultUrl, 'Invalid ResultURL.');
+        $this->client->validateUrl($timeoutUrl, 'Invalid TimeOutURL.');
 
         $url = $this->client->baseUrl() . '/mpesa/b2b/v1/paymentrequest';
 

@@ -3,6 +3,8 @@
 use Akika\LaravelMpesaMultivendor\Services\BongaService;
 use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
+uses()->group('services', 'bonga');
+
 afterEach(function () {
     \Mockery::close();
 });
@@ -96,8 +98,8 @@ it('redeems bonga points successfully using custom conversion rate', function ()
     $expectedData = [
         'msisdn' => '254712345678',
         'amount' => 150.00,
-        'bongaPoints' => 30,
-        'conversionRate' => 0.2,
+        'bongaPoints' => 75,
+        'conversionRate' => 0.5,
         'shortCode' => '174379',
         'accountNumber' => 'ORDER-002',
     ];
@@ -131,7 +133,7 @@ it('redeems bonga points successfully using custom conversion rate', function ()
         phoneNumber: '0712345678',
         amount: 150.00,
         transactionReference: 'ORDER-002',
-        conversionRate: 0.2,
+        conversionRate: 0.5,
     );
 
     expect($response)->toBe($expectedResponse);
@@ -145,7 +147,7 @@ it('rounds bonga points up when calculation results in a decimal', function () {
     $expectedData = [
         'msisdn' => '254712345678',
         'amount' => 101.00,
-        'bongaPoints' => 21, // ceil(101 * 0.2)
+        'bongaPoints' => 21,
         'conversionRate' => 0.2,
         'shortCode' => '174379',
         'accountNumber' => 'ORDER-003',

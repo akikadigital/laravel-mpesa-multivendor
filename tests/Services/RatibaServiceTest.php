@@ -3,6 +3,8 @@
 use Akika\LaravelMpesaMultivendor\Services\RatibaService;
 use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
+uses()->group('services', 'ratiba');
+
 afterEach(function () {
     \Mockery::close();
 });
@@ -34,18 +36,22 @@ it('creates a ratiba standing order successfully', function () {
         'StandingOrderID' => 'SO-001',
     ];
 
-    $client->shouldReceive('isValidUrl')->once()->with($callbackUrl)->andReturnTrue();
+    $client->shouldReceive('validateUrl')
+        ->once()
+        ->with($callbackUrl, 'Invalid CallbackURL.')
+        ->andReturnNull();
+
     $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
     $client->shouldReceive('shortcode')->once()->andReturn('174379');
 
     $client->shouldReceive('ratibaTransactionType')
         ->once()
-        ->with('CustomerPayBillOnline')
+        ->with('paybill')
         ->andReturn('CustomerPayBillOnline');
 
     $client->shouldReceive('getIdentifierType')
         ->once()
-        ->with('CustomerPayBillOnline')
+        ->with('paybill')
         ->andReturn(4);
 
     $client->shouldReceive('sanitizePhoneNumber')
@@ -55,7 +61,7 @@ it('creates a ratiba standing order successfully', function () {
 
     $client->shouldReceive('ratibaFrequency')
         ->once()
-        ->with('Monthly')
+        ->with('monthly')
         ->andReturn(4);
 
     $client->shouldReceive('makeRequest')
@@ -69,19 +75,12 @@ it('creates a ratiba standing order successfully', function () {
         name: 'Monthly Subscription',
         startDate: '2026-06-09',
         endDate: '2026-12-31',
-        transactionType: 'CustomerPayBillOnline',
+        transactionType: 'paybill',
         amount: 100.90,
         phoneNumber: '0712345678',
         callbackUrl: $callbackUrl,
         accountReference: 'SUB-001',
-        frequency: 'Monthly',
-    );
-
-    fwrite(
-        STDERR,
-        "\nRatiba Request:\n" .
-            json_encode($response, JSON_PRETTY_PRINT) .
-            "\n"
+        frequency: 'monthly',
     );
 
     expect($response)->toBe($expectedResponse);
@@ -90,10 +89,10 @@ it('creates a ratiba standing order successfully', function () {
 it('throws an exception when create standing order callback url is invalid', function () {
     $client = \Mockery::mock(MpesaClient::class);
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with('invalid-callback-url')
-        ->andReturnFalse();
+        ->with('invalid-callback-url', 'Invalid CallbackURL.')
+        ->andThrow(new InvalidArgumentException('Invalid CallbackURL.'));
 
     $service = new RatibaService($client);
 
@@ -101,12 +100,12 @@ it('throws an exception when create standing order callback url is invalid', fun
         name: 'Monthly Subscription',
         startDate: '2026-06-09',
         endDate: '2026-12-31',
-        transactionType: 'CustomerPayBillOnline',
+        transactionType: 'paybill',
         amount: 100,
         phoneNumber: '0712345678',
         callbackUrl: 'invalid-callback-url',
         accountReference: 'SUB-001',
-        frequency: 'Monthly',
+        frequency: 'monthly',
     );
 })->throws(InvalidArgumentException::class, 'Invalid CallbackURL.');
 
@@ -136,18 +135,22 @@ it('creates a standing order with custom transaction description and daily frequ
         'StandingOrderID' => 'SO-002',
     ];
 
-    $client->shouldReceive('isValidUrl')->once()->with($callbackUrl)->andReturnTrue();
+    $client->shouldReceive('validateUrl')
+        ->once()
+        ->with($callbackUrl, 'Invalid CallbackURL.')
+        ->andReturnNull();
+
     $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
     $client->shouldReceive('shortcode')->once()->andReturn('174379');
 
     $client->shouldReceive('ratibaTransactionType')
         ->once()
-        ->with('CustomerPayBillOnline')
+        ->with('paybill')
         ->andReturn('CustomerPayBillOnline');
 
     $client->shouldReceive('getIdentifierType')
         ->once()
-        ->with('CustomerPayBillOnline')
+        ->with('paybill')
         ->andReturn(4);
 
     $client->shouldReceive('sanitizePhoneNumber')
@@ -157,7 +160,7 @@ it('creates a standing order with custom transaction description and daily frequ
 
     $client->shouldReceive('ratibaFrequency')
         ->once()
-        ->with('Daily')
+        ->with('daily')
         ->andReturn(2);
 
     $client->shouldReceive('makeRequest')
@@ -171,12 +174,12 @@ it('creates a standing order with custom transaction description and daily frequ
         name: 'Daily Savings',
         startDate: '2026-06-09',
         endDate: '2026-07-09',
-        transactionType: 'CustomerPayBillOnline',
+        transactionType: 'paybill',
         amount: 50.99,
         phoneNumber: '+254700000001',
         callbackUrl: $callbackUrl,
         accountReference: 'SAVE-001',
-        frequency: 'Daily',
+        frequency: 'daily',
         transactionDesc: 'Daily customer saving',
     );
 
@@ -231,7 +234,11 @@ it('cancels a ratiba standing order successfully', function () {
         'ResponseDescription' => 'Standing order cancelled successfully',
     ];
 
-    $client->shouldReceive('isValidUrl')->once()->with($callbackUrl)->andReturnTrue();
+    $client->shouldReceive('validateUrl')
+        ->once()
+        ->with($callbackUrl, 'Invalid CallbackURL.')
+        ->andReturnNull();
+
     $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
     $client->shouldReceive('shortcode')->once()->andReturn('174379');
 
@@ -253,10 +260,10 @@ it('cancels a ratiba standing order successfully', function () {
 it('throws an exception when cancel callback url is invalid', function () {
     $client = \Mockery::mock(MpesaClient::class);
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with('invalid-callback-url')
-        ->andReturnFalse();
+        ->with('invalid-callback-url', 'Invalid CallbackURL.')
+        ->andThrow(new InvalidArgumentException('Invalid CallbackURL.'));
 
     $service = new RatibaService($client);
 

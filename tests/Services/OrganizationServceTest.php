@@ -3,6 +3,8 @@
 use Akika\LaravelMpesaMultivendor\Services\OrganizationServce;
 use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
+uses()->group('services', 'org');
+
 afterEach(function () {
     \Mockery::close();
 });

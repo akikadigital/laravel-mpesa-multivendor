@@ -3,6 +3,8 @@
 use Akika\LaravelMpesaMultivendor\Services\ImsiService;
 use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
+uses()->group('services', 'imsi');
+
 afterEach(function () {
     \Mockery::close();
 });

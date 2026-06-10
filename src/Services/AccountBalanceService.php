@@ -26,13 +26,9 @@ class AccountBalanceService
         string $identifierType = 'shortcode',
         string $remarks = 'Account balance request',
     ): array {
-        if (! $this->client->isValidUrl($resultUrl)) {
-            throw new \InvalidArgumentException('Invalid ResultURL.');
-        }
-
-        if (! $this->client->isValidUrl($queueTimeoutUrl)) {
-            throw new \InvalidArgumentException('Invalid QueueTimeOutURL.');
-        }
+        
+        $this->client->validateUrl($resultUrl, 'Invalid ResultURL.');
+        $this->client->validateUrl($queueTimeoutUrl, 'Invalid QueueTimeOutURL.');
 
         $url = $this->client->baseUrl() . '/mpesa/accountbalance/v1/query';
 

@@ -3,6 +3,8 @@
 use Akika\LaravelMpesaMultivendor\Services\PochiService;
 use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
+uses()->group('services', 'pochi');
+
 afterEach(function () {
     \Mockery::close();
 });

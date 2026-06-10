@@ -3,6 +3,8 @@
 use Akika\LaravelMpesaMultivendor\Services\DynamicQrService;
 use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
+uses()->group('services', 'dynamic-qr');
+
 afterEach(function () {
     \Mockery::close();
 });

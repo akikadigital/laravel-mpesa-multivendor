@@ -9,61 +9,76 @@ class B2BService
     public function __construct(protected MpesaClient $client) {}
 
     /**
-     * Send a B2B payment request.
+     * Send a B2B payment request to a business till number.
      *
-     * @param bool $toPaybill Whether the payment is to a Paybill (true) or BuyGoods (false) account.
      * @param string $receiverShortCode The shortcode of the receiving business.
      * @param int|float $amount The amount to be sent.
      * @param string $resultUrl The URL to receive the result of the transaction.
      * @param string $queueTimeoutUrl The URL to receive timeout notifications.
-     * @param string $receiverIdentifierType The type of identifier for the receiver (shortcode, msisdn, or tillnumber).
      * @param string $remarks Remarks for the transaction.
-     * @param string $accountReference Account reference for the transaction.
      * @param string|null $requester Optional requester phone number (sanitized if provided).
      *
      * @return array The response from the M-Pesa API.
      *
      * @throws \InvalidArgumentException If the result URL or queue timeout URL is invalid.
      */
-    
-    public function send(
-        bool $toPaybill,
+
+    public function buyGoods(
         string $receiverShortCode,
         int|float $amount,
         string $resultUrl,
         string $queueTimeoutUrl,
-        string $receiverIdentifierType = 'shortcode',
-        string $remarks = 'B2B payment',
-        string $accountReference = '',
+        string $remarks = 'B2B buy goods',
         ?string $requester = null
     ): array {
-        if (! $this->client->isValidUrl($resultUrl)) {
-            throw new \InvalidArgumentException('Invalid ResultURL.');
-        }
+        return $this->paymentRequest(
+            receiverShortCode: $receiverShortCode,
+            amount: $amount,
+            resultUrl: $resultUrl,
+            queueTimeoutUrl: $queueTimeoutUrl,
+            commandId: 'BusinessBuyGoods',
+            receiverIdentifierType: 2,
+            remarks: $remarks,
+            accountReference: null,
+            requester: $requester
+        );
+    }
 
-        if (! $this->client->isValidUrl($queueTimeoutUrl)) {
-            throw new \InvalidArgumentException('Invalid QueueTimeOutURL.');
-        }
-
-        $url = $this->client->baseUrl() . '/mpesa/b2b/v1/paymentrequest';
-
-        $data = [
-            'Initiator' => $this->client->apiUsername(),
-            'SecurityCredential' => $this->client->getSecurityCredential(),
-            'CommandID' => $toPaybill ? 'BusinessPayBill' : 'BusinessBuyGoods',
-            'SenderIdentifierType' => 4,
-            'RecieverIdentifierType' => $this->client->getIdentifierType($receiverIdentifierType),
-            'Amount' => (int) ceil($amount),
-            'PartyA' => $this->client->shortcode(),
-            'PartyB' => $receiverShortCode,
-            'Remarks' => $remarks,
-            'QueueTimeOutURL' => $queueTimeoutUrl,
-            'ResultURL' => $resultUrl,
-            'AccountReference' => $accountReference,
-            'Requester' =>  $requester !== null ? $this->client->sanitizePhoneNumber($requester) : null, // Optional. The consumer’s mobile number on behalf of whom you are paying.
-        ];
-
-        return $this->client->makeRequest($url, $data);
+    /**
+     * Send a B2B payment request to pay bill account.
+     *
+     * @param string $receiverShortCode The shortcode of the receiving business.
+     * @param int|float $amount The amount to be sent.
+     * @param string $accountReference The account number to be associated with the payment. Up to 13 characters.
+     * @param string $resultUrl The URL to receive the result of the transaction.
+     * @param string $queueTimeoutUrl The URL to receive timeout notifications.
+     * @param string $remarks Remarks for the transaction.
+     * @param string|null $requester Optional requester phone number (sanitized if provided).
+     *
+     * @return array The response from the M-Pesa API.
+     *
+     * @throws \InvalidArgumentException If the result URL or queue timeout URL is invalid.
+     */
+    public function paybill(
+        string $receiverShortCode,
+        int|float $amount,
+        string $accountReference,
+        string $resultUrl,
+        string $queueTimeoutUrl,
+        string $remarks = 'B2B pay bill',
+        ?string $requester = null
+    ): array {
+        return $this->paymentRequest(
+            receiverShortCode: $receiverShortCode,
+            amount: $amount,
+            resultUrl: $resultUrl,
+            queueTimeoutUrl: $queueTimeoutUrl,
+            commandId: 'BusinessPayBill',
+            receiverIdentifierType: 4,
+            remarks: $remarks,
+            accountReference: $accountReference,
+            requester: $requester
+        );
     }
 
     /**
@@ -78,7 +93,6 @@ class B2BService
      * 
      * @result - The result of the request: \Illuminate\Http\Client\Response
      */
-
     public function expressCheckout(
         string $partnerName,
         string $destShortcode,
@@ -87,22 +101,54 @@ class B2BService
         string $callbackUrl,
         string $requestRefID
     ): array {
-        if (! $this->client->isValidUrl($callbackUrl)) {
-            throw new \InvalidArgumentException('Invalid callback Url');
-        }
+        $this->client->validateUrl($callbackUrl, 'Invalid CallbackURL.');
 
         $url = $this->client->baseUrl() . '/mpesa/b2b/v1/ussdpush/get-msisdn';
 
-        $data = [
+        return $this->client->makeRequest($url, [
             'primaryShortCode' => $this->client->shortcode(),
             'receiverShortCode' => $destShortcode,
             'partnerName' => $partnerName,
             'amount' => floor($amount),
             'paymentRef' => $paymentReference,
             'callbackUrl' => $callbackUrl,
-            'RequestRefID' => $requestRefID
-        ];
+            'RequestRefID' => $requestRefID,
+        ]);
+    }
 
-        return $this->client->makeRequest($url, $data);
+    private function paymentRequest(
+        string $receiverShortCode,
+        int|float $amount,
+        string $resultUrl,
+        string $queueTimeoutUrl,
+        string $commandId,
+        int $receiverIdentifierType,
+        string $remarks,
+        ?string $accountReference = null,
+        ?string $requester = null
+    ): array {
+
+        $this->client->validateUrl($resultUrl, 'Invalid ResultURL.');
+        $this->client->validateUrl($queueTimeoutUrl, 'Invalid QueueTimeOutURL.');
+
+        $url = $this->client->baseUrl() . '/mpesa/b2b/v1/paymentrequest';
+
+        return $this->client->makeRequest($url, [
+            'Initiator' => $this->client->apiUsername(),
+            'SecurityCredential' => $this->client->getSecurityCredential(),
+            'CommandID' => $commandId,
+            'SenderIdentifierType' => 4,
+            'RecieverIdentifierType' => $receiverIdentifierType,
+            'Amount' => (int) ceil($amount),
+            'PartyA' => $this->client->shortcode(),
+            'PartyB' => $receiverShortCode,
+            'Remarks' => $remarks,
+            'QueueTimeOutURL' => $queueTimeoutUrl,
+            'ResultURL' => $resultUrl,
+            'AccountReference' => $accountReference,
+            'Requester' => $requester !== null
+                ? $this->client->sanitizePhoneNumber($requester)
+                : null,
+        ]);
     }
 }

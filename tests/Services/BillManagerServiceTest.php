@@ -3,6 +3,8 @@
 use Akika\LaravelMpesaMultivendor\Services\BillManagerService;
 use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
+uses()->group('services', 'bill-manager');
+
 afterEach(function () {
     \Mockery::close();
 });
@@ -27,18 +29,13 @@ it('opts in shortcode for bill manager successfully', function () {
         'ResponseDescription' => 'Success',
     ];
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with($callbackUrl)
-        ->andReturnTrue();
+        ->with($callbackUrl, 'Invalid CallbackURL.')
+        ->andReturnNull();
 
-    $client->shouldReceive('baseUrl')
-        ->once()
-        ->andReturn('https://sandbox.safaricom.co.ke');
-
-    $client->shouldReceive('shortcode')
-        ->once()
-        ->andReturn('174379');
+    $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
+    $client->shouldReceive('shortcode')->once()->andReturn('174379');
 
     $client->shouldReceive('sanitizePhoneNumber')
         ->once()
@@ -66,10 +63,10 @@ it('opts in shortcode for bill manager successfully', function () {
 it('throws an exception when bill manager callback url is invalid', function () {
     $client = \Mockery::mock(MpesaClient::class);
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with('invalid-callback-url')
-        ->andReturnFalse();
+        ->with('invalid-callback-url', 'Invalid CallbackURL.')
+        ->andThrow(new InvalidArgumentException('Invalid CallbackURL.'));
 
     $service = new BillManagerService($client);
 
@@ -109,9 +106,7 @@ it('creates a single invoice successfully', function () {
         'ResponseDescription' => 'Invoice created successfully',
     ];
 
-    $client->shouldReceive('baseUrl')
-        ->once()
-        ->andReturn('https://sandbox.safaricom.co.ke');
+    $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
 
     $client->shouldReceive('sanitizePhoneNumber')
         ->once()
@@ -164,9 +159,7 @@ it('creates bulk invoices successfully', function () {
         'ResponseDescription' => 'Bulk invoices created successfully',
     ];
 
-    $client->shouldReceive('baseUrl')
-        ->once()
-        ->andReturn('https://sandbox.safaricom.co.ke');
+    $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
 
     $client->shouldReceive('makeRequest')
         ->once()
@@ -194,9 +187,7 @@ it('cancels a single invoice successfully', function () {
         'ResponseDescription' => 'Invoice cancelled successfully',
     ];
 
-    $client->shouldReceive('baseUrl')
-        ->once()
-        ->andReturn('https://sandbox.safaricom.co.ke');
+    $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
 
     $client->shouldReceive('makeRequest')
         ->once()
@@ -225,9 +216,7 @@ it('cancels bulk invoices successfully', function () {
         'ResponseDescription' => 'Bulk invoices cancelled successfully',
     ];
 
-    $client->shouldReceive('baseUrl')
-        ->once()
-        ->andReturn('https://sandbox.safaricom.co.ke');
+    $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
 
     $client->shouldReceive('makeRequest')
         ->once()
@@ -260,18 +249,14 @@ it('reconciles a bill manager payment successfully', function () {
         'ResponseDescription' => 'Payment reconciled successfully',
     ];
 
-    $client->shouldReceive('baseUrl')
-        ->once()
-        ->andReturn('https://sandbox.safaricom.co.ke');
+    $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
 
     $client->shouldReceive('sanitizePhoneNumber')
         ->once()
         ->with('0712345678')
         ->andReturn('254712345678');
 
-    $client->shouldReceive('shortcode')
-        ->once()
-        ->andReturn('174379');
+    $client->shouldReceive('shortcode')->once()->andReturn('174379');
 
     $client->shouldReceive('makeRequest')
         ->once()

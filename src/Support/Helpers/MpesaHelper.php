@@ -88,6 +88,17 @@ trait MpesaHelper
     }
 
     /**
+     * 
+     * Vaidate URL and if it fails, throw an exception with the submitted message
+     */
+    public function validateUrl(string $url, string $message): void
+    {
+        if (! $this->isValidUrl($url)) {
+            throw new \InvalidArgumentException($message);
+        }
+    }
+
+    /**
      * Validate that a given URL is a valid callback URL and does not contain any of the blacklisted keywords.
      *
      * @param string $url

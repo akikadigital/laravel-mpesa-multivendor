@@ -32,13 +32,9 @@ class TaxRemittanceService
         string $commandId = 'PayTaxToKRA',
         ?string $partyA = null,
     ): array {
-        if (! $this->client->isValidUrl($resultUrl)) {
-            throw new \InvalidArgumentException('Invalid ResultURL.');
-        }
 
-        if (! $this->client->isValidUrl($queueTimeoutUrl)) {
-            throw new \InvalidArgumentException('Invalid QueueTimeOutURL.');
-        }
+        $this->client->validateUrl($resultUrl, 'Invalid ResultURL.');
+        $this->client->validateUrl($queueTimeoutUrl, 'Invalid QueueTimeOutURL.');
 
         $url = $this->client->baseUrl() . '/mpesa/b2b/v1/remittax';
 

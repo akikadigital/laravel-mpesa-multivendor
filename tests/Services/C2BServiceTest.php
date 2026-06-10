@@ -3,6 +3,8 @@
 use Akika\LaravelMpesaMultivendor\Services\C2BService;
 use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
+uses()->group('services', 'c2b');
+
 afterEach(function () {
     \Mockery::close();
 });
@@ -27,23 +29,18 @@ it('registers c2b urls successfully', function () {
         'ResponseDescription' => 'Success',
     ];
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with($confirmationUrl)
-        ->andReturnTrue();
+        ->with($confirmationUrl, 'Invalid ConfirmationURL.')
+        ->andReturnNull();
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with($validationUrl)
-        ->andReturnTrue();
+        ->with($validationUrl, 'Invalid ValidationURL.')
+        ->andReturnNull();
 
-    $client->shouldReceive('baseUrl')
-        ->once()
-        ->andReturn('https://sandbox.safaricom.co.ke');
-
-    $client->shouldReceive('shortcode')
-        ->once()
-        ->andReturn('174379');
+    $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
+    $client->shouldReceive('shortcode')->once()->andReturn('174379');
 
     $client->shouldReceive('makeRequest')
         ->once()
@@ -63,10 +60,10 @@ it('registers c2b urls successfully', function () {
 it('throws an exception when confirmation url is invalid', function () {
     $client = \Mockery::mock(MpesaClient::class);
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with('invalid-confirmation-url')
-        ->andReturnFalse();
+        ->with('invalid-confirmation-url', 'Invalid ConfirmationURL.')
+        ->andThrow(new InvalidArgumentException('Invalid ConfirmationURL.'));
 
     $service = new C2BService($client);
 
@@ -81,15 +78,15 @@ it('throws an exception when validation url is invalid', function () {
 
     $confirmationUrl = 'https://example.com/mpesa/c2b/confirmation';
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with($confirmationUrl)
-        ->andReturnTrue();
+        ->with($confirmationUrl, 'Invalid ConfirmationURL.')
+        ->andReturnNull();
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with('invalid-validation-url')
-        ->andReturnFalse();
+        ->with('invalid-validation-url', 'Invalid ValidationURL.')
+        ->andThrow(new InvalidArgumentException('Invalid ValidationURL.'));
 
     $service = new C2BService($client);
 
@@ -119,23 +116,18 @@ it('registers c2b urls with cancelled response type', function () {
         'ResponseDescription' => 'Success',
     ];
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with($confirmationUrl)
-        ->andReturnTrue();
+        ->with($confirmationUrl, 'Invalid ConfirmationURL.')
+        ->andReturnNull();
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with($validationUrl)
-        ->andReturnTrue();
+        ->with($validationUrl, 'Invalid ValidationURL.')
+        ->andReturnNull();
 
-    $client->shouldReceive('baseUrl')
-        ->once()
-        ->andReturn('https://sandbox.safaricom.co.ke');
-
-    $client->shouldReceive('shortcode')
-        ->once()
-        ->andReturn('174379');
+    $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
+    $client->shouldReceive('shortcode')->once()->andReturn('174379');
 
     $client->shouldReceive('makeRequest')
         ->once()
@@ -171,13 +163,8 @@ it('simulates c2b buy goods transaction successfully when bill ref number is nul
         'ResponseDescription' => 'Accept the service request successfully.',
     ];
 
-    $client->shouldReceive('baseUrl')
-        ->once()
-        ->andReturn('https://sandbox.safaricom.co.ke');
-
-    $client->shouldReceive('shortcode')
-        ->once()
-        ->andReturn('174379');
+    $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
+    $client->shouldReceive('shortcode')->once()->andReturn('174379');
 
     $client->shouldReceive('sanitizePhoneNumber')
         ->once()
@@ -217,13 +204,8 @@ it('simulates c2b pay bill transaction successfully when bill ref number is prov
         'ResponseDescription' => 'Accept the service request successfully.',
     ];
 
-    $client->shouldReceive('baseUrl')
-        ->once()
-        ->andReturn('https://sandbox.safaricom.co.ke');
-
-    $client->shouldReceive('shortcode')
-        ->once()
-        ->andReturn('174379');
+    $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
+    $client->shouldReceive('shortcode')->once()->andReturn('174379');
 
     $client->shouldReceive('sanitizePhoneNumber')
         ->once()

@@ -12,31 +12,20 @@ afterEach(function () {
 it('sends b2c payment request successfully', function () {
     $client = \Mockery::mock(MpesaClient::class);
 
-    $client->shouldReceive('isValidUrl')
-        ->with('https://example.com/result')
+    $client->shouldReceive('validateUrl')
+        ->with('https://example.com/result', 'Invalid ResultURL.')
         ->once()
-        ->andReturnTrue();
+        ->andReturnNull();
 
-    $client->shouldReceive('isValidUrl')
-        ->with('https://example.com/timeout')
+    $client->shouldReceive('validateUrl')
+        ->with('https://example.com/timeout', 'Invalid QueueTimeOutURL.')
         ->once()
-        ->andReturnTrue();
+        ->andReturnNull();
 
-    $client->shouldReceive('baseUrl')
-        ->once()
-        ->andReturn('https://sandbox.safaricom.co.ke');
-
-    $client->shouldReceive('apiUsername')
-        ->once()
-        ->andReturn('api-user');
-
-    $client->shouldReceive('getSecurityCredential')
-        ->once()
-        ->andReturn('security-credential');
-
-    $client->shouldReceive('shortcode')
-        ->once()
-        ->andReturn('600000');
+    $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
+    $client->shouldReceive('apiUsername')->once()->andReturn('api-user');
+    $client->shouldReceive('getSecurityCredential')->once()->andReturn('security-credential');
+    $client->shouldReceive('shortcode')->once()->andReturn('600000');
 
     $client->shouldReceive('sanitizePhoneNumber')
         ->with('0712345678')
@@ -85,10 +74,10 @@ it('sends b2c payment request successfully', function () {
 it('throws exception for invalid b2c result url', function () {
     $client = \Mockery::mock(MpesaClient::class);
 
-    $client->shouldReceive('isValidUrl')
-        ->with('invalid-url')
+    $client->shouldReceive('validateUrl')
+        ->with('invalid-url', 'Invalid ResultURL.')
         ->once()
-        ->andReturnFalse();
+        ->andThrow(new InvalidArgumentException('Invalid ResultURL.'));
 
     $service = new B2CService($client);
 
@@ -103,15 +92,15 @@ it('throws exception for invalid b2c result url', function () {
 it('throws exception for invalid b2c queue timeout url', function () {
     $client = \Mockery::mock(MpesaClient::class);
 
-    $client->shouldReceive('isValidUrl')
-        ->with('https://example.com/result')
+    $client->shouldReceive('validateUrl')
+        ->with('https://example.com/result', 'Invalid ResultURL.')
         ->once()
-        ->andReturnTrue();
+        ->andReturnNull();
 
-    $client->shouldReceive('isValidUrl')
-        ->with('invalid-url')
+    $client->shouldReceive('validateUrl')
+        ->with('invalid-url', 'Invalid QueueTimeOutURL.')
         ->once()
-        ->andReturnFalse();
+        ->andThrow(new InvalidArgumentException('Invalid QueueTimeOutURL.'));
 
     $service = new B2CService($client);
 
@@ -126,31 +115,20 @@ it('throws exception for invalid b2c queue timeout url', function () {
 it('sends b2c topup request successfully', function () {
     $client = \Mockery::mock(MpesaClient::class);
 
-    $client->shouldReceive('isValidUrl')
-        ->with('https://example.com/result')
+    $client->shouldReceive('validateUrl')
+        ->with('https://example.com/result', 'Invalid ResultURL.')
         ->once()
-        ->andReturnTrue();
+        ->andReturnNull();
 
-    $client->shouldReceive('isValidUrl')
-        ->with('https://example.com/timeout')
+    $client->shouldReceive('validateUrl')
+        ->with('https://example.com/timeout', 'Invalid TimeOutURL.')
         ->once()
-        ->andReturnTrue();
+        ->andReturnNull();
 
-    $client->shouldReceive('baseUrl')
-        ->once()
-        ->andReturn('https://sandbox.safaricom.co.ke');
-
-    $client->shouldReceive('apiUsername')
-        ->once()
-        ->andReturn('api-user');
-
-    $client->shouldReceive('getSecurityCredential')
-        ->once()
-        ->andReturn('security-credential');
-
-    $client->shouldReceive('shortcode')
-        ->once()
-        ->andReturn('600000');
+    $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
+    $client->shouldReceive('apiUsername')->once()->andReturn('api-user');
+    $client->shouldReceive('getSecurityCredential')->once()->andReturn('security-credential');
+    $client->shouldReceive('shortcode')->once()->andReturn('600000');
 
     $client->shouldReceive('sanitizePhoneNumber')
         ->with('0712345678')
@@ -202,10 +180,10 @@ it('sends b2c topup request successfully', function () {
 it('throws exception for invalid b2c topup result url', function () {
     $client = \Mockery::mock(MpesaClient::class);
 
-    $client->shouldReceive('isValidUrl')
-        ->with('invalid-url')
+    $client->shouldReceive('validateUrl')
+        ->with('invalid-url', 'Invalid ResultURL.')
         ->once()
-        ->andReturnFalse();
+        ->andThrow(new InvalidArgumentException('Invalid ResultURL.'));
 
     $service = new B2CService($client);
 
@@ -220,15 +198,15 @@ it('throws exception for invalid b2c topup result url', function () {
 it('throws exception for invalid b2c topup timeout url', function () {
     $client = \Mockery::mock(MpesaClient::class);
 
-    $client->shouldReceive('isValidUrl')
-        ->with('https://example.com/result')
+    $client->shouldReceive('validateUrl')
+        ->with('https://example.com/result', 'Invalid ResultURL.')
         ->once()
-        ->andReturnTrue();
+        ->andReturnNull();
 
-    $client->shouldReceive('isValidUrl')
-        ->with('invalid-url')
+    $client->shouldReceive('validateUrl')
+        ->with('invalid-url', 'Invalid TimeOutURL.')
         ->once()
-        ->andReturnFalse();
+        ->andThrow(new InvalidArgumentException('Invalid TimeOutURL.'));
 
     $service = new B2CService($client);
 

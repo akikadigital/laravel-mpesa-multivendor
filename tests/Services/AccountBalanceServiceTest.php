@@ -12,15 +12,15 @@ afterEach(function () {
 it('checks account balance successfully', function () {
     $client = \Mockery::mock(MpesaClient::class);
 
-    $client->shouldReceive('isValidUrl')
-        ->with('https://example.com/result')
+    $client->shouldReceive('validateUrl')
+        ->with('https://example.com/result', 'Invalid ResultURL.')
         ->once()
-        ->andReturnTrue();
+        ->andReturnNull();
 
-    $client->shouldReceive('isValidUrl')
-        ->with('https://example.com/timeout')
+    $client->shouldReceive('validateUrl')
+        ->with('https://example.com/timeout', 'Invalid QueueTimeOutURL.')
         ->once()
-        ->andReturnTrue();
+        ->andReturnNull();
 
     $client->shouldReceive('baseUrl')
         ->once()
@@ -79,10 +79,10 @@ it('checks account balance successfully', function () {
 it('throws exception for invalid result url', function () {
     $client = \Mockery::mock(MpesaClient::class);
 
-    $client->shouldReceive('isValidUrl')
-        ->with('invalid-url')
+    $client->shouldReceive('validateUrl')
+        ->with('invalid-url', 'Invalid ResultURL.')
         ->once()
-        ->andReturnFalse();
+        ->andThrow(new InvalidArgumentException('Invalid ResultURL.'));
 
     $service = new AccountBalanceService($client);
 
@@ -95,15 +95,15 @@ it('throws exception for invalid result url', function () {
 it('throws exception for invalid queue timeout url', function () {
     $client = \Mockery::mock(MpesaClient::class);
 
-    $client->shouldReceive('isValidUrl')
-        ->with('https://example.com/result')
+    $client->shouldReceive('validateUrl')
+        ->with('https://example.com/result', 'Invalid ResultURL.')
         ->once()
-        ->andReturnTrue();
+        ->andReturnNull();
 
-    $client->shouldReceive('isValidUrl')
-        ->with('invalid-url')
+    $client->shouldReceive('validateUrl')
+        ->with('invalid-url', 'Invalid QueueTimeOutURL.')
         ->once()
-        ->andReturnFalse();
+        ->andThrow(new InvalidArgumentException('Invalid QueueTimeOutURL.'));
 
     $service = new AccountBalanceService($client);
 

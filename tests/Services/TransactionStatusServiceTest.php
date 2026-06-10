@@ -3,6 +3,8 @@
 use Akika\LaravelMpesaMultivendor\Services\TransactionStatusService;
 use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
+uses()->group('services', 'transaction-status');
+
 afterEach(function () {
     \Mockery::close();
 });
@@ -36,31 +38,20 @@ it('queries transaction status successfully', function () {
         'ResponseDescription' => 'Accept the service request successfully.',
     ];
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with($resultUrl)
-        ->andReturnTrue();
+        ->with($resultUrl, 'Invalid ResultURL.')
+        ->andReturnNull();
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with($queueTimeoutUrl)
-        ->andReturnTrue();
+        ->with($queueTimeoutUrl, 'Invalid QueueTimeOutURL.')
+        ->andReturnNull();
 
-    $client->shouldReceive('baseUrl')
-        ->once()
-        ->andReturn('https://sandbox.safaricom.co.ke');
-
-    $client->shouldReceive('apiUsername')
-        ->once()
-        ->andReturn('testapi');
-
-    $client->shouldReceive('getSecurityCredential')
-        ->once()
-        ->andReturn('security-credential');
-
-    $client->shouldReceive('shortcode')
-        ->once()
-        ->andReturn('174379');
+    $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
+    $client->shouldReceive('apiUsername')->once()->andReturn('testapi');
+    $client->shouldReceive('getSecurityCredential')->once()->andReturn('security-credential');
+    $client->shouldReceive('shortcode')->once()->andReturn('174379');
 
     $client->shouldReceive('getIdentifierType')
         ->once()
@@ -86,10 +77,10 @@ it('queries transaction status successfully', function () {
 it('throws an exception when result url is invalid', function () {
     $client = \Mockery::mock(MpesaClient::class);
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with('invalid-result-url')
-        ->andReturnFalse();
+        ->with('invalid-result-url', 'Invalid ResultURL.')
+        ->andThrow(new InvalidArgumentException('Invalid ResultURL.'));
 
     $service = new TransactionStatusService($client);
 
@@ -105,15 +96,15 @@ it('throws an exception when queue timeout url is invalid', function () {
 
     $resultUrl = 'https://example.com/mpesa/status/result';
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with($resultUrl)
-        ->andReturnTrue();
+        ->with($resultUrl, 'Invalid ResultURL.')
+        ->andReturnNull();
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with('invalid-timeout-url')
-        ->andReturnFalse();
+        ->with('invalid-timeout-url', 'Invalid QueueTimeOutURL.')
+        ->andThrow(new InvalidArgumentException('Invalid QueueTimeOutURL.'));
 
     $service = new TransactionStatusService($client);
 
@@ -138,7 +129,7 @@ it('uses custom party a, identifier type, original conversation id, remarks and 
         'CommandID' => 'TransactionStatusQuery',
         'TransactionID' => 'RBX123456',
         'PartyA' => '600000',
-        'IdentifierType' => 11,
+        'IdentifierType' => 2,
         'OriginalConversationID' => 'AG_20260609_123456',
         'ResultURL' => $resultUrl,
         'QueueTimeOutURL' => $queueTimeoutUrl,
@@ -151,32 +142,24 @@ it('uses custom party a, identifier type, original conversation id, remarks and 
         'ResponseDescription' => 'Accept the service request successfully.',
     ];
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with($resultUrl)
-        ->andReturnTrue();
+        ->with($resultUrl, 'Invalid ResultURL.')
+        ->andReturnNull();
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with($queueTimeoutUrl)
-        ->andReturnTrue();
+        ->with($queueTimeoutUrl, 'Invalid QueueTimeOutURL.')
+        ->andReturnNull();
 
-    $client->shouldReceive('baseUrl')
-        ->once()
-        ->andReturn('https://sandbox.safaricom.co.ke');
-
-    $client->shouldReceive('apiUsername')
-        ->once()
-        ->andReturn('testapi');
-
-    $client->shouldReceive('getSecurityCredential')
-        ->once()
-        ->andReturn('security-credential');
+    $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
+    $client->shouldReceive('apiUsername')->once()->andReturn('testapi');
+    $client->shouldReceive('getSecurityCredential')->once()->andReturn('security-credential');
 
     $client->shouldReceive('getIdentifierType')
         ->once()
-        ->with('till')
-        ->andReturn(11);
+        ->with('tillnumber')
+        ->andReturn(2);
 
     $client->shouldReceive('makeRequest')
         ->once()
@@ -191,7 +174,7 @@ it('uses custom party a, identifier type, original conversation id, remarks and 
         transactionId: 'RBX123456',
         resultUrl: $resultUrl,
         queueTimeoutUrl: $queueTimeoutUrl,
-        identifierType: 'till',
+        identifierType: 'tillnumber',
         originalConversationId: 'AG_20260609_123456',
         remarks: 'Check payment status',
         occasion: 'INV-001',

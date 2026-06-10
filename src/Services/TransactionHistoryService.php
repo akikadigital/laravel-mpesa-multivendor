@@ -22,9 +22,8 @@ class TransactionHistoryService
         string $nominatedNumber,
         string $callbackUrl
     ): array {
-        if (! $this->client->isValidUrl($callbackUrl)) {
-            throw new \InvalidArgumentException('Invalid CallbackURL.');
-        }
+
+        $this->client->validateUrl($callbackUrl, 'Invalid CallbackURL.');
 
         $url = $this->client->baseUrl() . '/pulltransactions/v1/register';
 

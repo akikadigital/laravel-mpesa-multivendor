@@ -32,9 +32,8 @@ class StkPushService
         string $transactionType = 'CustomerPayBillOnline',
         ?string $receivingShortCode = null,
     ): array {
-        if (! $this->client->isValidUrl($callbackUrl)) {
-            throw new \InvalidArgumentException('Invalid CallbackURL.');
-        }
+
+        $this->client->validateUrl($callbackUrl, 'Invalid CallbackURL.');
 
         $timestamp = now()->format('YmdHis');
 

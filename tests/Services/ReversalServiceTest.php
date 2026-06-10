@@ -3,6 +3,8 @@
 use Akika\LaravelMpesaMultivendor\Services\ReversalService;
 use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
+uses()->group('services', 'reversal');
+
 afterEach(function () {
     \Mockery::close();
 });
@@ -35,31 +37,20 @@ it('reverses a transaction successfully', function () {
         'ResponseDescription' => 'Accept the service request successfully.',
     ];
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with($resultUrl)
-        ->andReturnTrue();
+        ->with($resultUrl, 'Invalid ResultURL.')
+        ->andReturnNull();
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with($queueTimeoutUrl)
-        ->andReturnTrue();
+        ->with($queueTimeoutUrl, 'Invalid QueueTimeOutURL.')
+        ->andReturnNull();
 
-    $client->shouldReceive('baseUrl')
-        ->once()
-        ->andReturn('https://sandbox.safaricom.co.ke');
-
-    $client->shouldReceive('apiUsername')
-        ->once()
-        ->andReturn('testapi');
-
-    $client->shouldReceive('getSecurityCredential')
-        ->once()
-        ->andReturn('security-credential');
-
-    $client->shouldReceive('shortcode')
-        ->once()
-        ->andReturn('174379');
+    $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
+    $client->shouldReceive('apiUsername')->once()->andReturn('testapi');
+    $client->shouldReceive('getSecurityCredential')->once()->andReturn('security-credential');
+    $client->shouldReceive('shortcode')->once()->andReturn('174379');
 
     $client->shouldReceive('makeRequest')
         ->once()
@@ -81,10 +72,10 @@ it('reverses a transaction successfully', function () {
 it('throws an exception when result url is invalid', function () {
     $client = \Mockery::mock(MpesaClient::class);
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with('invalid-result-url')
-        ->andReturnFalse();
+        ->with('invalid-result-url', 'Invalid ResultURL.')
+        ->andThrow(new InvalidArgumentException('Invalid ResultURL.'));
 
     $service = new ReversalService($client);
 
@@ -101,15 +92,15 @@ it('throws an exception when queue timeout url is invalid', function () {
 
     $resultUrl = 'https://example.com/mpesa/reversal/result';
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with($resultUrl)
-        ->andReturnTrue();
+        ->with($resultUrl, 'Invalid ResultURL.')
+        ->andReturnNull();
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with('invalid-timeout-url')
-        ->andReturnFalse();
+        ->with('invalid-timeout-url', 'Invalid QueueTimeOutURL.')
+        ->andThrow(new InvalidArgumentException('Invalid QueueTimeOutURL.'));
 
     $service = new ReversalService($client);
 
@@ -121,7 +112,7 @@ it('throws an exception when queue timeout url is invalid', function () {
     );
 })->throws(InvalidArgumentException::class, 'Invalid QueueTimeOutURL.');
 
-it('uses custom receiver party, identifier type, remarks and occasion', function () {
+it('uses custom receiver party and remarks', function () {
     $client = \Mockery::mock(MpesaClient::class);
 
     $resultUrl = 'https://example.com/mpesa/reversal/result';
@@ -147,27 +138,19 @@ it('uses custom receiver party, identifier type, remarks and occasion', function
         'ResponseDescription' => 'Accept the service request successfully.',
     ];
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with($resultUrl)
-        ->andReturnTrue();
+        ->with($resultUrl, 'Invalid ResultURL.')
+        ->andReturnNull();
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with($queueTimeoutUrl)
-        ->andReturnTrue();
+        ->with($queueTimeoutUrl, 'Invalid QueueTimeOutURL.')
+        ->andReturnNull();
 
-    $client->shouldReceive('baseUrl')
-        ->once()
-        ->andReturn('https://sandbox.safaricom.co.ke');
-
-    $client->shouldReceive('apiUsername')
-        ->once()
-        ->andReturn('testapi');
-
-    $client->shouldReceive('getSecurityCredential')
-        ->once()
-        ->andReturn('security-credential');
+    $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
+    $client->shouldReceive('apiUsername')->once()->andReturn('testapi');
+    $client->shouldReceive('getSecurityCredential')->once()->andReturn('security-credential');
 
     $client->shouldReceive('makeRequest')
         ->once()

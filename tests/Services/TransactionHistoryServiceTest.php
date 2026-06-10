@@ -3,6 +3,8 @@
 use Akika\LaravelMpesaMultivendor\Services\TransactionHistoryService;
 use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
+uses()->group('services', 'transaction-history');
+
 afterEach(function () {
     \Mockery::close();
 });
@@ -26,10 +28,10 @@ it('registers transaction history callback successfully', function () {
         'ResponseDescription' => 'Success',
     ];
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with($callbackUrl)
-        ->andReturnTrue();
+        ->with($callbackUrl, 'Invalid CallbackURL.')
+        ->andReturnNull();
 
     $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
     $client->shouldReceive('shortcode')->once()->andReturn('174379');
@@ -57,10 +59,10 @@ it('registers transaction history callback successfully', function () {
 it('throws an exception when transaction history callback url is invalid', function () {
     $client = \Mockery::mock(MpesaClient::class);
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with('invalid-callback-url')
-        ->andReturnFalse();
+        ->with('invalid-callback-url', 'Invalid CallbackURL.')
+        ->andThrow(new InvalidArgumentException('Invalid CallbackURL.'));
 
     $service = new TransactionHistoryService($client);
 

@@ -3,6 +3,8 @@
 use Akika\LaravelMpesaMultivendor\Services\TaxRemittanceService;
 use Akika\LaravelMpesaMultivendor\Support\MpesaClient;
 
+uses()->group('services', 'tax-remittance');
+
 afterEach(function () {
     \Mockery::close();
 });
@@ -35,15 +37,15 @@ it('remits tax successfully using default shortcode', function () {
         'ResponseDescription' => 'Accept the service request successfully.',
     ];
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with($resultUrl)
-        ->andReturnTrue();
+        ->with($resultUrl, 'Invalid ResultURL.')
+        ->andReturnNull();
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with($queueTimeoutUrl)
-        ->andReturnTrue();
+        ->with($queueTimeoutUrl, 'Invalid QueueTimeOutURL.')
+        ->andReturnNull();
 
     $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
     $client->shouldReceive('apiUsername')->once()->andReturn('testapi');
@@ -70,10 +72,10 @@ it('remits tax successfully using default shortcode', function () {
 it('throws an exception when tax remittance result url is invalid', function () {
     $client = \Mockery::mock(MpesaClient::class);
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with('invalid-result-url')
-        ->andReturnFalse();
+        ->with('invalid-result-url', 'Invalid ResultURL.')
+        ->andThrow(new InvalidArgumentException('Invalid ResultURL.'));
 
     $service = new TaxRemittanceService($client);
 
@@ -90,15 +92,15 @@ it('throws an exception when tax remittance queue timeout url is invalid', funct
 
     $resultUrl = 'https://example.com/mpesa/tax/result';
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with($resultUrl)
-        ->andReturnTrue();
+        ->with($resultUrl, 'Invalid ResultURL.')
+        ->andReturnNull();
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with('invalid-timeout-url')
-        ->andReturnFalse();
+        ->with('invalid-timeout-url', 'Invalid QueueTimeOutURL.')
+        ->andThrow(new InvalidArgumentException('Invalid QueueTimeOutURL.'));
 
     $service = new TaxRemittanceService($client);
 
@@ -138,19 +140,20 @@ it('remits tax successfully using custom party a, command id and remarks', funct
         'ConversationID' => 'test-conversation-id',
     ];
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with($resultUrl)
-        ->andReturnTrue();
+        ->with($resultUrl, 'Invalid ResultURL.')
+        ->andReturnNull();
 
-    $client->shouldReceive('isValidUrl')
+    $client->shouldReceive('validateUrl')
         ->once()
-        ->with($queueTimeoutUrl)
-        ->andReturnTrue();
+        ->with($queueTimeoutUrl, 'Invalid QueueTimeOutURL.')
+        ->andReturnNull();
 
     $client->shouldReceive('baseUrl')->once()->andReturn('https://sandbox.safaricom.co.ke');
     $client->shouldReceive('apiUsername')->once()->andReturn('testapi');
     $client->shouldReceive('getSecurityCredential')->once()->andReturn('security-credential');
+
     $client->shouldNotReceive('shortcode');
 
     $client->shouldReceive('makeRequest')

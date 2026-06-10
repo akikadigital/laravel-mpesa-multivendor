@@ -24,13 +24,9 @@ class C2BService
         string $validationUrl,
         string $responseType = 'Completed'
     ): array {
-        if (! $this->client->isValidUrl($confirmationUrl)) {
-            throw new \InvalidArgumentException('Invalid ConfirmationURL.');
-        }
 
-        if (! $this->client->isValidUrl($validationUrl)) {
-            throw new \InvalidArgumentException('Invalid ValidationURL.');
-        }
+        $this->client->validateUrl($confirmationUrl, 'Invalid ConfirmationURL.');
+        $this->client->validateUrl($validationUrl, 'Invalid ValidationURL.');
 
         $url = $this->client->baseUrl() . '/mpesa/c2b/v1/registerurl';
 
